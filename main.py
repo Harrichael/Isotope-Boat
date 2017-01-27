@@ -8,6 +8,8 @@ in order to navigate a traffic jam like game with the
 addition of a gradient cost field.
 """
 
+from readPuzzleInput import getStateFromFile
+
 """
 GameSolver class handles extracting file input, searching, and printing
 """
@@ -16,7 +18,7 @@ class GameSolver():
         pass
 
     def runInputFile(self, inputFilePath):
-        pass
+        initialState = getStateFromFile(inputFilePath)
 
     def printOutput(self):
         pass
