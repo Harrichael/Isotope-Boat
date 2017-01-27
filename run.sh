@@ -5,7 +5,5 @@
 # The below script will compile and execute the example.cpp program.
 
 # compile the program
-g++ -W -Wall -pedantic-errors example.cpp -o example
+python main.py
 
-# execute the program
-./example 
