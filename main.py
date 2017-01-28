@@ -9,6 +9,7 @@ addition of a gradient cost field.
 """
 
 from readPuzzleInput import getStateFromFile
+from pathFinders import BFTS
 
 """
 GameSolver class handles extracting file input, searching, and printing
@@ -18,10 +19,11 @@ class GameSolver():
         pass
 
     def runInputFile(self, inputFilePath):
-        initialState = getStateFromFile(inputFilePath)
+        self.initialState = getStateFromFile(inputFilePath)
+        #solver = BFTS(initialState, initialState, initialState, initialState)
 
     def printOutput(self):
-        pass
+        print self.initialState
 
 if __name__ == '__main__':
     solver = GameSolver()
