@@ -23,3 +23,10 @@ class CardinalRay():
         self.x = x
         self.y = y
         self.cardDir = cardDir
+
+    @property
+    def pos(self):
+        return Point(self.x, self.y)
+
+def ManhattanDistance(src, dest):
+    return abs(dest.x - src.x) + abs(dest.y - src.y)
