@@ -28,5 +28,5 @@ class GameSolver():
 
 if __name__ == '__main__':
     solver = GameSolver()
-    solver.runInputFile('puzzles/examplePuzzle.txt')
+    solver.runInputFile('puzzles/puzzle1.txt')
     solver.printOutput()

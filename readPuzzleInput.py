@@ -7,7 +7,7 @@ An error could be raised in the event of invalid input.
 """
 
 from cartMath import Point, Rectangle, CardinalRay
-from gameRules import BoardState
+from gameRules import createBoardState
 
 """
 Input Format:
@@ -56,16 +56,16 @@ def getStateFromFile(inputFilePath):
     for treeIn in treesIn:
         trees.append( Point( *_splitLineData(treeIn) ) )
         
-    return BoardState( Rectangle(boardWidth, boardHeigth),
-                       Point(radSourceX, radSourceY),
-                       radMag,
-                       radDecayFactor,
-                       _createCardRay(boatX, boatY, boatDir),
-                       Point(goalX, goalY),
-                       alligators,
-                       turtles,
-                       trees
-                     )
+    return createBoardState( Rectangle(boardWidth, boardHeigth),
+                             Point(radSourceX, radSourceY),
+                             radMag,
+                             radDecayFactor,
+                             _createCardRay(boatX, boatY, boatDir),
+                             Point(goalX, goalY),
+                             alligators,
+                             turtles,
+                             trees
+                           )
 
 def _splitLineData(line, numInts=2):
     items = line.split()
