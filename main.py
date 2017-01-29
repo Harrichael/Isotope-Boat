@@ -9,6 +9,7 @@ addition of a gradient cost field.
 """
 
 from readPuzzleInput import getStateFromFile
+from gameRules import neighborGen, isGoalState
 from pathFinders import BFTS
 
 """
@@ -20,7 +21,7 @@ class GameSolver():
 
     def runInputFile(self, inputFilePath):
         self.initialState = getStateFromFile(inputFilePath)
-        #solver = BFTS(initialState, initialState, initialState, initialState)
+        solver = BFTS(self.initialState, neighborGen, (lambda s, d: 1), isGoalState)
 
     def printOutput(self):
         print self.initialState

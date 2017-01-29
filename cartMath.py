@@ -9,6 +9,12 @@ class Point():
         self.x = x
         self.y = y
 
+    def __eq__(self, otherObj):
+        return (self.x == otherObj.x) and (self.y == otherObj.y)
+
+    def __hash__(self):
+        return hash('Point {} {}'.format(self.x, self.y))
+
 class Rectangle():
     def __init__(self, x, y):
         self.x = x
