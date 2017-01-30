@@ -4,6 +4,7 @@ Michael Harrington
 This file provides game rules and game abstractions
 """
 
+from itertools import chain
 from copy import copy, deepcopy
 from cartMath import Point, CardinalRay, ManhattanDistance
 
@@ -105,21 +106,18 @@ class MapEntity():
     def space(self):
         return self._space
 
-def rayToVectorPointList(posRay, vectorLength):
-    if posRay.cardDir == posRay.down:
-        nextP = lambda p: Point(p.x, p.y+1)
-    elif posRay.cardDir == posRay.up:
-        nextP = lambda p: Point(p.x, p.y-1)
-    elif posRay.cardDir == posRay.left:
-        nextP = lambda p: Point(p.x-1, p.y)
-    elif posRay.cardDir == posRay.right:
-        nextP = lambda p: Point(p.x+1, p.y)
-    else:
-        raise ValueError('Invalid Cartesian Direction')
+nextPDict = { CardinalRay.down: lambda p: Point(p.x, p.y+1),
+              CardinalRay.up: lambda p: Point(p.x, p.y-1),
+              CardinalRay.left: lambda p: Point(p.x-1, p.y),
+              CardinalRay.right: lambda p: Point(p.x+1, p.y)
+            }
 
-    pointList = [posRay.pos]
+def rayToVectorPointList(posRay, vectorLength):
+    nextP = nextPDict[posRay.cardDir]
+
+    pointList = [posRay.pos]*vectorLength
     for index in range(vectorLength-1):
-        pointList.append(nextP(pointList[index]))
+        pointList[index+1] = nextP(pointList[index])
     return pointList
 
 class Board(MapEntity):
@@ -162,7 +160,7 @@ class Animal(MapEntity):
             self.posRay.x = pos.x
             self.posRay.y = pos.y
         else:
-            raise NotImplemented('Not a recognized boat action')
+            raise NotImplementedError('Not a recognized boat action')
         return MapEntity([])
 
 class Alligator(Animal):
@@ -235,8 +233,8 @@ class Boat(MapEntity):
     @property
     def actions(self):
         return [ Action(MovableObjs.boat, Moves.forward, self.posRay.cardDir),
-                 Action(MovableObjs.boat, Moves.clockwise),
-                 Action(MovableObjs.boat, Moves.counterClockwise) ]
+                 Action(MovableObjs.boat, Moves.counterClockwise),
+                 Action(MovableObjs.boat, Moves.clockwise) ]
 
     def move(self, action):
         movePoints = []
@@ -321,9 +319,9 @@ class BoardState():
         if not self.board.contained:
             raise ValueError
 
-        for obj in obstacles:
-            if obj.collision(actionObj) or obj.collision(movePoints):
-                raise ValueError
+        obstacleEntity = MapEntity(chain(*[obst.space for obst in obstacles]))
+        if actionObj.collision(obstacleEntity) or movePoints.collision(obstacleEntity):
+            raise ValueError
 
         return BoardState( self.board,
                            self.radSrc,

@@ -4,7 +4,8 @@ Michael Harrington
 This file contains path finder algorithms
 """
 
-from Queue import Queue
+from collections import deque
+from timer import profile
 
 """
 Search node class to hold a board state and other info
@@ -25,17 +26,17 @@ class SearchNode():
         return path
 
 """
-Breadth Firtst Tree Search
+Breadth First Tree Search
 """
 class BFTS():
     def __init__(self, initialState, neighborGen, costCalc, isGoal):
-        frontier = Queue()
-        frontier.put( SearchNode(initialState, None, None, 0) )
+        frontier = deque()
+        frontier.append( SearchNode(initialState, None, None, 0) )
         while True:
-            if frontier.empty():
+            if not frontier:
                 self.searchNodePath = None
                 break
-            selectNode = frontier.get()
+            selectNode = frontier.popleft()
 
             if selectNode.parent and str(selectNode.createPath()[1].action).startswith('T 1'):
                 print 'right path'
@@ -45,7 +46,7 @@ class BFTS():
                 break
             for newNode, action in neighborGen(selectNode.boardState):
                 nodeCost = selectNode.pathCost + costCalc(newNode)
-                frontier.put( SearchNode(newNode, selectNode, action, nodeCost) )
+                frontier.append( SearchNode(newNode, selectNode, action, nodeCost) )
 
     @property
     def pathFound(self):

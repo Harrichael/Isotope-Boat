@@ -13,7 +13,7 @@ class Point():
         return (self.x == otherObj.x) and (self.y == otherObj.y)
 
     def __hash__(self):
-        return hash('Point {} {}'.format(self.x, self.y))
+        return hash((self.x, self.y))
 
 class Rectangle():
     def __init__(self, x, y):

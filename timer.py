@@ -1,9 +1,10 @@
 """
 Michael Harrington
 
-This file provides function for timeing
+This file provides function for timeing and profiling
 """
 
+from cProfile import Profile
 from time import time
 
 def timeStampMS():
@@ -23,3 +24,12 @@ class TimerMS():
     @property
     def time(self):
         return self.endTime - self.startTime
+
+def profile(func):
+    def wrapper(*args, **kwargs):
+        prof = Profile()
+        retval = prof.runcall(func, *args, **kwargs)
+        prof.print_stats(sort='time')
+        return retval
+
+    return wrapper
