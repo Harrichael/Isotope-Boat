@@ -6,6 +6,7 @@ This file provides game rules and game abstractions
 
 from itertools import chain
 from copy import copy, deepcopy
+from memoize import Memoize
 from cartMath import Point, CardinalRay, ManhattanDistance
 
 """
@@ -94,7 +95,7 @@ class RadSource():
 
 class MapEntity():
     def __init__(self, pointList):
-        self._space = pointList
+        self._space = set(pointList)
 
     def collision(self, otherObj):
         for point in self.space:
@@ -115,6 +116,7 @@ nextPDict = { CardinalRay.down: lambda p: Point(p.x, p.y+1),
 def rayToVectorPointList(posRay, vectorLength):
     nextP = nextPDict[posRay.cardDir]
 
+    # We get a minor speed up by preallocating the list
     pointList = [posRay.pos]*vectorLength
     for index in range(vectorLength-1):
         pointList[index+1] = nextP(pointList[index])
@@ -161,7 +163,7 @@ class Animal(MapEntity):
             self.posRay.y = pos.y
         else:
             raise NotImplementedError('Not a recognized boat action')
-        return MapEntity([])
+        return MapEntity(self.space)
 
 class Alligator(Animal):
     # Class Constants
@@ -237,7 +239,7 @@ class Boat(MapEntity):
                  Action(MovableObjs.boat, Moves.clockwise) ]
 
     def move(self, action):
-        movePoints = []
+        movePoints = list(self.space)
         frontPos = rayToVectorPointList(self.posRay, 2)[1]
         if action.act == Moves.clockwise:
             self.posRay.cardDir = clockwise[self.posRay.cardDir]
@@ -324,13 +326,12 @@ class BoardState():
 
         else:
             raise NotImplementedError('Unimplemented movable action')
-        movePoints = actionObj.move(action)
-        if not self.board.contained:
+        moveEntity = actionObj.move(action)
+        if not self.board.contained(moveEntity.space):
             return False, None
 
         obstacleEntity = MapEntity(chain(*[obst.space for obst in obstacles]))
-        actionEntity = MapEntity(actionObj.space.union(movePoints.space))
-        if actionEntity.collision(obstacleEntity):
+        if moveEntity.collision(obstacleEntity):
             return False, None
 
         return True, BoardState( self.board,

@@ -44,5 +44,11 @@ class CardinalRay():
     def reverse(self):
         self.cardDir = self.revDict[self.cardDir]
 
+    def __eq__(self, other):
+        return (self.x == other.x) and (self.y == other.y) and (self.cardDir == other.cardDir)
+
+    def __hash__(self):
+        return hash((self.x, self.y, self.cardDir))
+
 def ManhattanDistance(src, dest):
     return abs(dest.x - src.x) + abs(dest.y - src.y)

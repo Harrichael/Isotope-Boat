@@ -38,9 +38,6 @@ class BFTS():
                 break
             selectNode = frontier.popleft()
 
-            if selectNode.parent and str(selectNode.createPath()[1].action).startswith('T 1'):
-                print 'right path'
-
             if isGoal(selectNode.boardState):
                 self.searchNodePath = selectNode.createPath()
                 break
