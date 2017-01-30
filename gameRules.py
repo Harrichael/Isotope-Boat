@@ -64,15 +64,18 @@ class MovableObjs():
               }
 
 class Action():
-    def __init__(self, obj, act):
+    def __init__(self, obj, act, cardDir=None):
         self.obj = obj
         self.objIndex = 0
         self.act = act
+        # Some Actions might want to override our beloved forward/backward printing
+        self.cardDir = cardDir
 
     def __str__(self):
+        dirChar = Moves.moveDict[self.act] if self.cardDir == None else charDict[self.cardDir]
         return ' '.join([ MovableObjs.objDict[self.obj],
                           str(self.objIndex),
-                          Moves.moveDict[self.act]
+                          dirChar
                        ])
 
 """
@@ -135,8 +138,8 @@ class Alligator(Animal):
 
     @property
     def actions(self):
-        return [ Action(MovableObjs.alligator, Moves.forward),
-                 Action(MovableObjs.alligator, Moves.backward) ]
+        return [ Action(MovableObjs.alligator, Moves.forward, self.posRay.cardDir),
+                 Action(MovableObjs.alligator, Moves.backward, self.posRay.cardDir) ]
 
 class Turtle(Animal):
     # Class Constants
@@ -150,8 +153,8 @@ class Turtle(Animal):
 
     @property
     def actions(self):
-        return [ Action(MovableObjs.turtle, Moves.forward),
-                 Action(MovableObjs.turtle, Moves.backward) ]
+        return [ Action(MovableObjs.turtle, Moves.forward, self.posRay.cardDir),
+                 Action(MovableObjs.turtle, Moves.backward, self.posRay.cardDir) ]
 
 class Tree(MapEntity):
     def __init__(self, pos):
@@ -182,7 +185,7 @@ class Boat(MapEntity):
 
     @property
     def actions(self):
-        return [ Action(MovableObjs.boat, Moves.forward),
+        return [ Action(MovableObjs.boat, Moves.forward, self.posRay.cardDir),
                  Action(MovableObjs.boat, Moves.clockwise),
                  Action(MovableObjs.boat, Moves.counterClockwise) ]
 
