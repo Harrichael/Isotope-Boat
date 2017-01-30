@@ -6,6 +6,15 @@ Main Python File for Puzzle Project 1
 This puzzle is using search algorithms and heuristics
 in order to navigate a traffic jam like game with the
 addition of a gradient cost field.
+
+TODO:
+    Appropriate Turtle/Alligator Moves
+    Save in solution1.txt
+    Appropriate Exceptions
+    Code Reduction
+    Code Comments/Headers
+    Profile
+    Reduce Complexity
 """
 
 from timer import timeStampMS
@@ -30,22 +39,25 @@ class GameSolver():
 
         return self.pathSolver.pathFound
 
-    def printOutput(self):
+    def strOutput(self):
         path = self.pathSolver.actionPath
         finalSearchState = self.pathSolver.searchNodePath[-1]
         finalState = finalSearchState.boardState
         actions = self.pathSolver.actionPath
 
-        print self.totalTime
-        print finalSearchState.pathCost
-        print len(actions)
-        print ','.join(map(str, actions))
-        print finalState
+        return '\n'.join(map(str, [ self.totalTime,
+                                    finalSearchState.pathCost,
+                                    len(actions),
+                                    ','.join(map(str, actions)),
+                                    finalState
+                                  ]))
 
 if __name__ == '__main__':
     gSolver = GameSolver()
     if gSolver.runInputFile('puzzles/puzzle1.txt'):
-        gSolver.printOutput()
+        output = gSolver.strOutput()
+        with open('solutions/solution1.txt', 'w') as fileObj:
+            fileObj.write(output)
     else:
         print '(Error) No solution found'
 

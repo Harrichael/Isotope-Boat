@@ -25,6 +25,13 @@ class CardinalRay():
     up = 1
     left = 2
     right = 3
+
+    revDict = { down: up,
+                up: down,
+                right: left,
+                left: right
+              }
+
     def __init__(self, x, y, cardDir):
         self.x = x
         self.y = y
@@ -33,6 +40,9 @@ class CardinalRay():
     @property
     def pos(self):
         return Point(self.x, self.y)
+
+    def reverse(self):
+        self.cardDir = self.revDict[self.cardDir]
 
 def ManhattanDistance(src, dest):
     return abs(dest.x - src.x) + abs(dest.y - src.y)

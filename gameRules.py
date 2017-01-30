@@ -147,6 +147,20 @@ class Animal(MapEntity):
     def __str__(self):
         return _createStr(self.posRay.x, self.posRay.y, self.charDir)
 
+    def move(self, action):
+        if action.act == Moves.forward:
+            pos = rayToVectorPointList(self.posRay, 2)[1]
+            self.posRay.x = pos.x
+            self.posRay.y = pos.y
+        elif action.act == Moves.backward:
+            self.posRay.reverse()
+            pos = rayToVectorPointList(self.posRay, 2)[1]
+            self.posRay.reverse()
+            self.posRay.x = pos.x
+            self.posRay.y = pos.y
+        else:
+            raise NotImplemented('Not a recognized boat action')
+
 class Alligator(Animal):
     # Class Constants
     objLength = 3
@@ -274,19 +288,35 @@ class BoardState():
         newBoat = deepcopy(self.boat)
         newAlligators = deepcopy(self.alligators)
         newTurtles = deepcopy(self.turtles)
+        index = action.objIndex
         if action.obj == MovableObjs.boat:
             newBoat.move(action)
             if not self.board.contained:
                 raise ValueError
 
-            for obj in (self.alligators + self.turtles + self.trees):
+            for obj in (newAlligators + newTurtles + self.trees):
                 if obj.collision(self.boat):
                     raise ValueError
 
         elif action.obj == MovableObjs.alligator:
-            pass
+            newAlligators[index].move(action)
+            if not self.board.contained:
+                raise ValueError
+
+            otherAlligators = newAlligators[:index] + newAlligators[index+1:]
+            for obj in ([newBoat] + otherAlligators + newTurtles + self.trees):
+                if obj.collision(newAlligators[index]):
+                    raise ValueError
+
         elif action.obj == MovableObjs.turtle:
-            pass
+            newTurtles[index].move(action)
+            if not self.board.contained:
+                raise ValueError
+
+            otherTurtles = newTurtles[:index] + newTurtles[index+1:]
+            for obj in ([newBoat] + newAlligators + otherTurtles + self.trees):
+                if obj.collision(newTurtles[index]):
+                    raise ValueError
         else:
             raise NotImplementedError('Unimplemented movable action')
 
