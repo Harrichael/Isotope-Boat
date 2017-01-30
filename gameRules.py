@@ -329,7 +329,8 @@ class BoardState():
             return False, None
 
         obstacleEntity = MapEntity(chain(*[obst.space for obst in obstacles]))
-        if actionObj.collision(obstacleEntity) or movePoints.collision(obstacleEntity):
+        actionEntity = MapEntity(actionObj.space.union(movePoints.space))
+        if actionEntity.collision(obstacleEntity):
             return False, None
 
         return True, BoardState( self.board,
