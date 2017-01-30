@@ -119,6 +119,26 @@ def rayToVectorPointList(posRay, vectorLength):
         pointList.append(nextP(pointList[index]))
     return pointList
 
+class Board(MapEntity):
+    def __init__(self, pos):
+        self.pos = pos
+        self._space = None
+
+    @property
+    def space(self):
+        if not self._space:
+            self._space = set()
+            for x in range(self.pos.x):
+                for y in range(self.pos.y):
+                    self._space.add(Point(x, y))
+        return self._space
+
+    def contained(self, points):
+        return all([point in self.space for point in points])
+
+    def __str__(self):
+        return _createStr(self.pos.x, self.pos.y)
+
 class Animal(MapEntity):
     @property
     def charDir(self):
@@ -228,7 +248,7 @@ class Goal(MapEntity):
 Rule handling for representing board state
 """
 def createBoardState(board, radSrc, radMag, radDecF, boat, goal, alligs, turts, trees):
-    return BoardState( board,
+    return BoardState( Board(board),
                        RadSource(radSrc, radMag, radDecF),
                        Boat(boat),
                        Goal(goal),
@@ -256,6 +276,9 @@ class BoardState():
         newTurtles = deepcopy(self.turtles)
         if action.obj == MovableObjs.boat:
             newBoat.move(action)
+            if not self.board.contained:
+                raise ValueError
+
         elif action.obj == MovableObjs.alligator:
             pass
         elif action.obj == MovableObjs.turtle:
@@ -282,7 +305,7 @@ class BoardState():
 
     def __str__(self):
         stateStr = ''
-        stateStr += _createStrLine(self.board.x, self.board.y)
+        stateStr += str(self.board) + '\n'
         stateStr += _createStrLine(self.radSrc.location.x, self.radSrc.location.y)
         stateStr += _createStrLine(self.radSrc.magnitude, self.radSrc.decayFactor)
         stateStr += _createStrLine( len(self.alligators),
