@@ -5,7 +5,7 @@ This file provides game rules and game abstractions
 """
 
 from copy import copy, deepcopy
-from cartMath import Point, CardinalRay
+from cartMath import Point, CardinalRay, ManhattanDistance
 
 """
 Rule handling helpers for displaying text
@@ -86,6 +86,10 @@ class RadSource():
         self.location = srcPoint
         self.magnitude = magnitude
         self.decayFactor = decayFactor
+
+    def rads(self, point):
+        distance = ManhattanDistance(self.location, point)
+        return self.magnitude - self.decayFactor * distance
 
 class MapEntity():
     def collision(self, otherObj):
@@ -295,4 +299,10 @@ Returns list of tuples of neighbor, action :: List(Tuple(BoardState, Action))
 """
 def neighborGen(boardState):
     return boardState.getNeighbors()
+
+"""
+Rule handling for cost calculation
+"""
+def costCalc(boardState):
+    return sum([boardState.radSrc.rads(point) for point in boardState.boat.space])
 

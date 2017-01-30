@@ -40,7 +40,7 @@ class BFTS():
                 self.searchNodePath = selectNode.createPath()
                 break
             for newNode, action in neighborGen(selectNode.boardState):
-                nodeCost = selectNode.pathCost + costCalc(selectNode.boardState, newNode)
+                nodeCost = selectNode.pathCost + costCalc(newNode)
                 frontier.put( SearchNode(newNode, selectNode, action, nodeCost) )
 
     @property

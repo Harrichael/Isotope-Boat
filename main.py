@@ -10,7 +10,7 @@ addition of a gradient cost field.
 
 from timer import timeStampMS
 from readPuzzleInput import getStateFromFile
-from gameRules import neighborGen, isGoalState
+from gameRules import neighborGen, isGoalState, costCalc
 from pathFinders import BFTS
 
 """
@@ -24,7 +24,7 @@ class GameSolver():
         initialState = getStateFromFile(inputFilePath)
 
         startTime = timeStampMS()
-        self.pathSolver = BFTS(initialState, neighborGen, (lambda s, d: 1), isGoalState)
+        self.pathSolver = BFTS(initialState, neighborGen, costCalc, isGoalState)
         endTime = timeStampMS()
         self.totalTime = endTime - startTime
 
