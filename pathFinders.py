@@ -10,10 +10,11 @@ from Queue import Queue
 Search node class to hold a board state and other info
 """
 class SearchNode():
-    def __init__(self, boardState, parent, action):
+    def __init__(self, boardState, parent, action, pathCost):
         self.boardState = boardState
         self.parent = parent
         self.action = action
+        self.pathCost = pathCost
 
     def createPath(self):
         path = []
@@ -29,7 +30,7 @@ Breadth Firtst Tree Search
 class BFTS():
     def __init__(self, initialState, neighborGen, costCalc, isGoal):
         frontier = Queue()
-        frontier.put( SearchNode(initialState, None, None) )
+        frontier.put( SearchNode(initialState, None, None, 0) )
         while True:
             if frontier.empty():
                 self.searchNodePath = None
@@ -39,7 +40,8 @@ class BFTS():
                 self.searchNodePath = selectNode.createPath()
                 break
             for newNode, action in neighborGen(selectNode.boardState):
-                frontier.put( SearchNode(newNode, selectNode, action) )
+                nodeCost = selectNode.pathCost + costCalc(selectNode.boardState, newNode)
+                frontier.put( SearchNode(newNode, selectNode, action, nodeCost) )
 
     @property
     def pathFound(self):
@@ -47,9 +49,9 @@ class BFTS():
 
     @property
     def boardStatePath(self):
-        return map(lambda n: n.boardState, self.searchNodePath)
+        return list(map(lambda n: n.boardState, self.searchNodePath))
 
     @property
     def actionPath(self):
-        return map(lambda n: n.action, self.searchNodePath[1:])
+        return list(map(lambda n: n.action, self.searchNodePath[1:]))
 
