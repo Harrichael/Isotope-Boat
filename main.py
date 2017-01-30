@@ -48,3 +48,4 @@ if __name__ == '__main__':
         gSolver.printOutput()
     else:
         print '(Error) No solution found'
+

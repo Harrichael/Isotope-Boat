@@ -47,16 +47,33 @@ class Moves():
     forward = 2
     backward = 3
 
+    moveDict = { clockwise: 'C',
+                 counterClockwise: 'N',
+                 forward: 'F',
+                 backward: 'B'
+               }
+
 class MovableObjs():
     boat = 0
     alligator = 1
     turtle = 2
+
+    objDict = { boat: 'B',
+                alligator: 'A',
+                turtle: 'T',
+              }
 
 class Action():
     def __init__(self, obj, act):
         self.obj = obj
         self.objIndex = 0
         self.act = act
+
+    def __str__(self):
+        return ' '.join([ MovableObjs.objDict[self.obj],
+                          str(self.objIndex),
+                          Moves.moveDict[self.act]
+                       ])
 
 """
 Rule abstractions for game objects
