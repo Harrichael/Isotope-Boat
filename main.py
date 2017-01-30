@@ -20,13 +20,20 @@ class GameSolver():
         pass
 
     def runInputFile(self, inputFilePath):
-        self.initialState = getStateFromFile(inputFilePath)
-        solver = BFTS(self.initialState, neighborGen, (lambda s, d: 1), isGoalState)
+        initialState = getStateFromFile(inputFilePath)
+        pathSolver = BFTS(initialState, neighborGen, (lambda s, d: 1), isGoalState)
+        if pathSolver.pathFound:
+            self.path = pathSolver.actionPath
+            self.finalState = pathSolver.boardStatePath[-1]
+            return True
+        return False
 
     def printOutput(self):
-        print self.initialState
+        print self.finalState
 
 if __name__ == '__main__':
-    solver = GameSolver()
-    solver.runInputFile('puzzles/puzzle1.txt')
-    solver.printOutput()
+    gSolver = GameSolver()
+    if gSolver.runInputFile('puzzles/puzzle1.txt'):
+        gSolver.printOutput()
+    else:
+        print 'No solution found'

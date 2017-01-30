@@ -217,7 +217,6 @@ class BoardState():
 
     @property
     def actionObjects(self):
-        return [self.boat]
         return [self.boat] + self.alligators + self.turtles
 
     def applyAction(self, action):
