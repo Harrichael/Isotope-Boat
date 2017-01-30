@@ -44,9 +44,10 @@ class GameSolver():
         finalSearchState = self.pathSolver.searchNodePath[-1]
         finalState = finalSearchState.boardState
         actions = self.pathSolver.actionPath
+        pathCost = 0 if finalSearchState is None else finalSearchState.parent.pathCost
 
         return '\n'.join(map(str, [ self.totalTime,
-                                    finalSearchState.pathCost,
+                                    pathCost,
                                     len(actions),
                                     ','.join(map(str, actions)),
                                     finalState

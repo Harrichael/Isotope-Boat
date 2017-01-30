@@ -92,6 +92,9 @@ class RadSource():
         return self.magnitude - self.decayFactor * distance
 
 class MapEntity():
+    def __init__(self, pointList):
+        self._space = pointList
+
     def collision(self, otherObj):
         for point in self.space:
             if point in otherObj.space:
@@ -100,7 +103,7 @@ class MapEntity():
 
     @property
     def space(self):
-        raise NotImplemented('MapEntity derived classes must implement space')
+        return self._space
 
 def rayToVectorPointList(posRay, vectorLength):
     if posRay.cardDir == posRay.down:
@@ -160,6 +163,7 @@ class Animal(MapEntity):
             self.posRay.y = pos.y
         else:
             raise NotImplemented('Not a recognized boat action')
+        return MapEntity([])
 
 class Alligator(Animal):
     # Class Constants
@@ -235,16 +239,24 @@ class Boat(MapEntity):
                  Action(MovableObjs.boat, Moves.counterClockwise) ]
 
     def move(self, action):
+        movePoints = []
+        frontPos = rayToVectorPointList(self.posRay, 2)[1]
         if action.act == Moves.clockwise:
             self.posRay.cardDir = clockwise[self.posRay.cardDir]
+            newFrontPos = rayToVectorPointList(self.posRay, 2)[1]
+            movePoints.append(Point(newFrontPos.x, frontPos.y))
+            movePoints.append(Point(frontPos.x, newFrontPos.y))
         elif action.act == Moves.counterClockwise:
             self.posRay.cardDir = counterClockwise[self.posRay.cardDir]
+            newFrontPos = rayToVectorPointList(self.posRay, 2)[1]
+            movePoints.append(Point(newFrontPos.x, frontPos.y))
+            movePoints.append(Point(frontPos.x, newFrontPos.y))
         elif action.act == Moves.forward:
-            pos = rayToVectorPointList(self.posRay, 2)[1]
-            self.posRay.x = pos.x
-            self.posRay.y = pos.y
+            self.posRay.x = frontPos.x
+            self.posRay.y = frontPos.y
         else:
             raise NotImplemented('Not a recognized boat action')
+        return MapEntity(movePoints)
         
 
 class Goal(MapEntity):
@@ -290,35 +302,28 @@ class BoardState():
         newTurtles = deepcopy(self.turtles)
         index = action.objIndex
         if action.obj == MovableObjs.boat:
-            newBoat.move(action)
-            if not self.board.contained:
-                raise ValueError
-
-            for obj in (newAlligators + newTurtles + self.trees):
-                if obj.collision(self.boat):
-                    raise ValueError
+            actionObj = newBoat
+            obstacles = (newAlligators + newTurtles + self.trees)
 
         elif action.obj == MovableObjs.alligator:
-            newAlligators[index].move(action)
-            if not self.board.contained:
-                raise ValueError
-
+            actionObj = newAlligators[index]
             otherAlligators = newAlligators[:index] + newAlligators[index+1:]
-            for obj in ([newBoat] + otherAlligators + newTurtles + self.trees):
-                if obj.collision(newAlligators[index]):
-                    raise ValueError
+            obstacles = ([newBoat] + otherAlligators + newTurtles + self.trees)
 
         elif action.obj == MovableObjs.turtle:
-            newTurtles[index].move(action)
-            if not self.board.contained:
-                raise ValueError
-
+            actionObj = newTurtles[index]
             otherTurtles = newTurtles[:index] + newTurtles[index+1:]
-            for obj in ([newBoat] + newAlligators + otherTurtles + self.trees):
-                if obj.collision(newTurtles[index]):
-                    raise ValueError
+            obstacles = ([newBoat] + newAlligators + otherTurtles + self.trees)
+
         else:
             raise NotImplementedError('Unimplemented movable action')
+        movePoints = actionObj.move(action)
+        if not self.board.contained:
+            raise ValueError
+
+        for obj in obstacles:
+            if obj.collision(actionObj) or obj.collision(movePoints):
+                raise ValueError
 
         return BoardState( self.board,
                            self.radSrc,
