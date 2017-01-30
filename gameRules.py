@@ -279,6 +279,10 @@ class BoardState():
             if not self.board.contained:
                 raise ValueError
 
+            for obj in (self.alligators + self.turtles + self.trees):
+                if obj.collision(self.boat):
+                    raise ValueError
+
         elif action.obj == MovableObjs.alligator:
             pass
         elif action.obj == MovableObjs.turtle:
