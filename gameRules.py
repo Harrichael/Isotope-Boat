@@ -120,9 +120,6 @@ def rayToVectorPointList(posRay, vectorLength):
     return pointList
 
 class Animal(MapEntity):
-    def __init__(self, posRay):
-        self.posRay = posRay
-
     @property
     def charDir(self):
         return charDict[self.posRay.cardDir]
@@ -135,6 +132,11 @@ class Alligator(Animal):
     objLength = 3
     # Modified Variables
     numAlligators = 0
+
+    def __init__(self, posRay):
+        self.posRay = posRay
+        self.index = self.numAlligators
+        self.__class__.numAlligators += 1
 
     @property
     def space(self):
@@ -150,6 +152,11 @@ class Turtle(Animal):
     objLength = 2
     # Modified Variables
     numTurtles = 0
+
+    def __init__(self, posRay):
+        self.posRay = posRay
+        self.index = self.numTurtles
+        self.__class__.numTurtles += 1
 
     @property
     def space(self):
