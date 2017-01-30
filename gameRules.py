@@ -255,6 +255,9 @@ class Boat(MapEntity):
         else:
             raise NotImplemented('Not a recognized boat action')
         return MapEntity(movePoints)
+
+    def __copy__(self):
+        return Boat(CardinalRay(self.posRay.x, self.posRay.y, self.posRay.cardDir))
         
 
 class Goal(MapEntity):
@@ -295,20 +298,26 @@ class BoardState():
         return [self.boat] + self.alligators + self.turtles
 
     def applyAction(self, action):
-        newBoat = deepcopy(self.boat)
-        newAlligators = deepcopy(self.alligators)
-        newTurtles = deepcopy(self.turtles)
         index = action.objIndex
         if action.obj == MovableObjs.boat:
+            newBoat = copy(self.boat)
+            newAlligators = self.alligators
+            newTurtles = self.turtles
             actionObj = newBoat
             obstacles = (newAlligators + newTurtles + self.trees)
 
         elif action.obj == MovableObjs.alligator:
+            newBoat = self.boat
+            newAlligators = deepcopy(self.alligators)
+            newTurtles = self.turtles
             actionObj = newAlligators[index]
             otherAlligators = newAlligators[:index] + newAlligators[index+1:]
             obstacles = ([newBoat] + otherAlligators + newTurtles + self.trees)
 
         elif action.obj == MovableObjs.turtle:
+            newBoat = self.boat
+            newAlligators = self.alligators
+            newTurtles = deepcopy(self.turtles)
             actionObj = newTurtles[index]
             otherTurtles = newTurtles[:index] + newTurtles[index+1:]
             obstacles = ([newBoat] + newAlligators + otherTurtles + self.trees)
@@ -317,28 +326,26 @@ class BoardState():
             raise NotImplementedError('Unimplemented movable action')
         movePoints = actionObj.move(action)
         if not self.board.contained:
-            raise ValueError
+            return False, None
 
         obstacleEntity = MapEntity(chain(*[obst.space for obst in obstacles]))
         if actionObj.collision(obstacleEntity) or movePoints.collision(obstacleEntity):
-            raise ValueError
+            return False, None
 
-        return BoardState( self.board,
-                           self.radSrc,
-                           newBoat,
-                           self.goal,
-                           newAlligators,
-                           newTurtles,
-                           self.trees )
+        return True, BoardState( self.board,
+                                 self.radSrc,
+                                 newBoat,
+                                 self.goal,
+                                 newAlligators,
+                                 newTurtles,
+                                 self.trees )
 
     def getNeighbors(self):
         for gameObj in self.actionObjects:
             for action in gameObj.actions:
-                try:
-                    newBoardState = self.applyAction(action)
-                except ValueError:
-                    continue
-                yield newBoardState, action
+                success, newBoardState = self.applyAction(action)
+                if success:
+                    yield newBoardState, action
 
     def __str__(self):
         stateStr = ''
