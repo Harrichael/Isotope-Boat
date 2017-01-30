@@ -136,7 +136,7 @@ class Board(MapEntity):
                     self._space.add(Point(x, y))
         return self._space
 
-    def contained(self, points):
+    def containes(self, points):
         return all([point in self.space for point in points])
 
     def __str__(self):
@@ -239,24 +239,24 @@ class Boat(MapEntity):
                  Action(MovableObjs.boat, Moves.clockwise) ]
 
     def move(self, action):
-        movePoints = list(self.space)
+        movePoints = set()
         frontPos = rayToVectorPointList(self.posRay, 2)[1]
         if action.act == Moves.clockwise:
             self.posRay.cardDir = clockwise[self.posRay.cardDir]
             newFrontPos = rayToVectorPointList(self.posRay, 2)[1]
-            movePoints.append(Point(newFrontPos.x, frontPos.y))
-            movePoints.append(Point(frontPos.x, newFrontPos.y))
+            movePoints.add(Point(newFrontPos.x, frontPos.y))
+            movePoints.add(Point(frontPos.x, newFrontPos.y))
         elif action.act == Moves.counterClockwise:
             self.posRay.cardDir = counterClockwise[self.posRay.cardDir]
             newFrontPos = rayToVectorPointList(self.posRay, 2)[1]
-            movePoints.append(Point(newFrontPos.x, frontPos.y))
-            movePoints.append(Point(frontPos.x, newFrontPos.y))
+            movePoints.add(Point(newFrontPos.x, frontPos.y))
+            movePoints.add(Point(frontPos.x, newFrontPos.y))
         elif action.act == Moves.forward:
             self.posRay.x = frontPos.x
             self.posRay.y = frontPos.y
         else:
             raise NotImplemented('Not a recognized boat action')
-        return MapEntity(movePoints)
+        return MapEntity(movePoints.union(self.space))
 
     def __copy__(self):
         return Boat(CardinalRay(self.posRay.x, self.posRay.y, self.posRay.cardDir))
@@ -326,27 +326,28 @@ class BoardState():
 
         else:
             raise NotImplementedError('Unimplemented movable action')
+
         moveEntity = actionObj.move(action)
-        if not self.board.contained(moveEntity.space):
-            return False, None
+        if not self.board.containes(moveEntity.space):
+            return None
 
         obstacleEntity = MapEntity(chain(*[obst.space for obst in obstacles]))
         if moveEntity.collision(obstacleEntity):
-            return False, None
+            return None
 
-        return True, BoardState( self.board,
-                                 self.radSrc,
-                                 newBoat,
-                                 self.goal,
-                                 newAlligators,
-                                 newTurtles,
-                                 self.trees )
+        return BoardState( self.board,
+                           self.radSrc,
+                           newBoat,
+                           self.goal,
+                           newAlligators,
+                           newTurtles,
+                           self.trees )
 
     def getNeighbors(self):
         for gameObj in self.actionObjects:
             for action in gameObj.actions:
-                success, newBoardState = self.applyAction(action)
-                if success:
+                newBoardState = self.applyAction(action)
+                if newBoardState:
                     yield newBoardState, action
 
     def __str__(self):
