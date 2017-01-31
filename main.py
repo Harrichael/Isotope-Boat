@@ -8,7 +8,6 @@ in order to navigate a traffic jam like game with the
 addition of a gradient cost field.
 
 TODO:
-    Appropriate Exceptions
     Code Comments/Headers
 """
 

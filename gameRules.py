@@ -273,7 +273,7 @@ class Boat(MapEntity):
             self.posRay.x = frontPos.x
             self.posRay.y = frontPos.y
         else:
-            raise NotImplemented('Not a recognized boat action')
+            raise NotImplementedError('Not a recognized boat action')
         return MapEntity(movePoints.union(self.space))
 
     def __copy__(self):

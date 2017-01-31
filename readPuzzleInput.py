@@ -83,6 +83,6 @@ def _createCardRay(x, y, dirChar):
     elif dirChar == 'R':
         cardDir = CardinalRay.right
     else:
-        raise ValueError('Direction not supported: ' + dirChar)
+        raise NotImplementedError('Direction not supported: ' + dirChar)
 
     return CardinalRay(x, y, cardDir)
