@@ -8,13 +8,9 @@ in order to navigate a traffic jam like game with the
 addition of a gradient cost field.
 
 TODO:
-    Appropriate Turtle/Alligator Moves
-    Save in solution1.txt
     Appropriate Exceptions
     Code Reduction
     Code Comments/Headers
-    Profile
-    Reduce Complexity
 """
 
 from timer import timeStampMS
