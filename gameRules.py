@@ -66,9 +66,9 @@ class MovableObjs():
               }
 
 class Action():
-    def __init__(self, obj, act, cardDir=None):
+    def __init__(self, obj, act, index, cardDir=None):
         self.obj = obj
-        self.objIndex = 0
+        self.objIndex = index
         self.act = act
         # Some Actions might want to override our beloved forward/backward printing
         self.cardDir = cardDir
@@ -182,8 +182,8 @@ class Alligator(Animal):
 
     @property
     def actions(self):
-        return [ Action(MovableObjs.alligator, Moves.forward, self.posRay.cardDir),
-                 Action(MovableObjs.alligator, Moves.backward, self.posRay.cardDir) ]
+        return [ Action(MovableObjs.alligator, Moves.forward, self.index, self.posRay.cardDir),
+                 Action(MovableObjs.alligator, Moves.backward, self.index, self.posRay.cardDir) ]
 
 class Turtle(Animal):
     # Class Constants
@@ -202,8 +202,8 @@ class Turtle(Animal):
 
     @property
     def actions(self):
-        return [ Action(MovableObjs.turtle, Moves.forward, self.posRay.cardDir),
-                 Action(MovableObjs.turtle, Moves.backward, self.posRay.cardDir) ]
+        return [ Action(MovableObjs.turtle, Moves.forward, self.index, self.posRay.cardDir),
+                 Action(MovableObjs.turtle, Moves.backward, self.index, self.posRay.cardDir) ]
 
 class Tree(MapEntity):
     def __init__(self, pos):
@@ -217,9 +217,15 @@ class Tree(MapEntity):
         return set([self.pos])
 
 class Boat(MapEntity):
+    # Class Constants
     objLength = 2
+    # Modified Variables
+    numBoats = 0
+
     def __init__(self, posRay):
         self.posRay = posRay
+        self.index = self.numBoats
+        self.__class__.numBoats += 1
 
     @property
     def charDir(self):
@@ -234,9 +240,9 @@ class Boat(MapEntity):
 
     @property
     def actions(self):
-        return [ Action(MovableObjs.boat, Moves.forward, self.posRay.cardDir),
-                 Action(MovableObjs.boat, Moves.counterClockwise),
-                 Action(MovableObjs.boat, Moves.clockwise) ]
+        return [ Action(MovableObjs.boat, Moves.forward, self.index, self.posRay.cardDir),
+                 Action(MovableObjs.boat, Moves.counterClockwise, self.index),
+                 Action(MovableObjs.boat, Moves.clockwise, self.index) ]
 
     def move(self, action):
         movePoints = set()

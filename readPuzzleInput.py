@@ -41,8 +41,8 @@ def getStateFromFile(inputFilePath):
     goalX, goalY = _splitLineData(goalIn)
 
     alligatorsIn, turtlesIn, treesIn = ( entityList[:numAlligators],
-                                         entityList[numAlligators:-numTrees],
-                                         entityList[-numTrees:] )
+                                         entityList[numAlligators:numAlligators+numTurtles],
+                                         entityList[numAlligators+numTurtles:] )
 
     alligators = []
     for alligIn in alligatorsIn:
