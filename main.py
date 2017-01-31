@@ -3,9 +3,9 @@ Michael Harrington
 
 Main Python File for Puzzle Project 1
 
-This puzzle is using search algorithms and heuristics
+This puzzle is using search algorithms (and a later phase, heuristics)
 in order to navigate a traffic jam like game with the
-addition of a gradient cost field.
+addition of a gradient cost field dubbed a radiation field.
 """
 
 from gameSolver import GameSolver
