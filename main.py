@@ -6,9 +6,6 @@ Main Python File for Puzzle Project 1
 This puzzle is using search algorithms and heuristics
 in order to navigate a traffic jam like game with the
 addition of a gradient cost field.
-
-TODO:
-    Code Comments/Headers
 """
 
 from gameSolver import GameSolver

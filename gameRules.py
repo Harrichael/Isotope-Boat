@@ -392,9 +392,6 @@ def isGoalState(boardState):
 """
 Rule handling for state generation
 """
-"""
-Returns list of tuples of neighbor, action :: List(Tuple(BoardState, Action))
-"""
 def neighborGen(boardState):
     return boardState.getNeighbors()
 
