@@ -185,6 +185,12 @@ class Alligator(Animal):
         return [ Action(MovableObjs.alligator, Moves.forward, self.index, self.posRay.cardDir),
                  Action(MovableObjs.alligator, Moves.backward, self.index, self.posRay.cardDir) ]
 
+    def __copy__(self):
+        self.__class__.numAlligators -= 1
+        a = Alligator(CardinalRay(self.posRay.x, self.posRay.y, self.posRay.cardDir))
+        a.index = self.index
+        return a
+
 class Turtle(Animal):
     # Class Constants
     objLength = 2
@@ -204,6 +210,12 @@ class Turtle(Animal):
     def actions(self):
         return [ Action(MovableObjs.turtle, Moves.forward, self.index, self.posRay.cardDir),
                  Action(MovableObjs.turtle, Moves.backward, self.index, self.posRay.cardDir) ]
+
+    def __copy__(self):
+        self.__class__.numTurtles -= 1
+        t = Turtle(CardinalRay(self.posRay.x, self.posRay.y, self.posRay.cardDir))
+        t.index = self.index
+        return t
 
 class Tree(MapEntity):
     def __init__(self, pos):
@@ -265,7 +277,10 @@ class Boat(MapEntity):
         return MapEntity(movePoints.union(self.space))
 
     def __copy__(self):
-        return Boat(CardinalRay(self.posRay.x, self.posRay.y, self.posRay.cardDir))
+        self.__class__.numBoats -= 1
+        b = Boat(CardinalRay(self.posRay.x, self.posRay.y, self.posRay.cardDir))
+        b.index = self.index
+        return b
         
 
 class Goal(MapEntity):
