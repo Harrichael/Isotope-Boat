@@ -7,7 +7,7 @@ This file provides game rules and game abstractions
 from itertools import chain
 from copy import copy, deepcopy
 from memoize import Memoize
-from cartMath import Point, CardinalRay, ManhattanDistance
+from cartMath import Point, CardinalRay, manhattanDistance
 
 """
 Rule handling helpers for displaying text
@@ -90,7 +90,7 @@ class RadSource(object):
         self.decayFactor = decayFactor
 
     def rads(self, point):
-        distance = ManhattanDistance(self.location, point)
+        distance = manhattanDistance(self.location, point)
         return self.magnitude - self.decayFactor * distance
 
 class MapEntity(object):
@@ -99,10 +99,7 @@ class MapEntity(object):
         self._space = set(pointList)
 
     def collision(self, otherObj):
-        for point in self.space:
-            if point in otherObj.space:
-                return True
-        return False
+        return set.intersection(self.space, otherObj.space)
 
     @property
     def space(self):
@@ -138,8 +135,8 @@ class Board(MapEntity):
                     self._space.add(Point(x, y))
         return self._space
 
-    def containes(self, points):
-        return all([point in self.space for point in points])
+    def contains(self, points):
+        return points.issubset(self.space)
 
     def __str__(self):
         return _createStr(self.pos.x, self.pos.y)
@@ -361,7 +358,7 @@ class BoardState(object):
             raise NotImplementedError('Unimplemented movable action')
 
         moveEntity = actionObj.move(action)
-        if not self.board.containes(moveEntity.space):
+        if not self.board.contains(moveEntity.space):
             return None
 
         obstacleEntity = MapEntity(chain(*[obst.space for obst in obstacles]))

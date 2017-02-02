@@ -50,5 +50,5 @@ class CardinalRay():
     def __hash__(self):
         return hash((self.x, self.y, self.cardDir))
 
-def ManhattanDistance(src, dest):
+def manhattanDistance(src, dest):
     return abs(dest.x - src.x) + abs(dest.y - src.y)
