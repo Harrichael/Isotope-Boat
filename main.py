@@ -12,7 +12,7 @@ from gameSolver import GameSolver
 
 if __name__ == '__main__':
     solver = GameSolver()
-    if solver.runInputFile('puzzles/examplePuzzle.txt'):
+    if solver.runInputFile('puzzles/puzzle1.txt'):
         output = solver.strOutput()
         with open('solutions/solution1.txt', 'w') as fileObj:
             fileObj.write(output)

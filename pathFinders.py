@@ -10,8 +10,7 @@ from timer import profile
 """
 Search node class to hold a board state and other info
 """
-class SearchNode(object):
-    __slots__ = ['boardState', 'parent', 'action', 'pathCost']
+class SearchNode():
     def __init__(self, boardState, parent, action, pathCost):
         self.boardState = boardState
         self.parent = parent
@@ -29,7 +28,7 @@ class SearchNode(object):
 """
 Breadth First Tree Search
 """
-class BFTS(object):
+class BFTS():
     def __init__(self, initialState, neighborGen, costCalc, isGoal):
         frontier = deque()
         frontier.append( SearchNode(initialState, None, None, 0) )

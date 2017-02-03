@@ -43,7 +43,7 @@ counterClockwise = { CardinalRay.down: CardinalRay.right,
 """
 Rule abstractions for actions
 """
-class Moves(object):
+class Moves():
     clockwise = 0
     counterClockwise = 1
     forward = 2
@@ -55,7 +55,7 @@ class Moves(object):
                  backward: 'B'
                }
 
-class MovableObjs(object):
+class MovableObjs():
     boat = 0
     alligator = 1
     turtle = 2
@@ -65,7 +65,7 @@ class MovableObjs(object):
                 turtle: 'T',
               }
 
-class Action(object):
+class Action():
     def __init__(self, obj, act, index, cardDir=None):
         self.obj = obj
         self.objIndex = index
@@ -83,7 +83,7 @@ class Action(object):
 """
 Rule abstractions for game objects
 """
-class RadSource(object):
+class RadSource():
     def __init__(self, srcPoint, magnitude, decayFactor):
         self.location = srcPoint
         self.magnitude = magnitude
@@ -93,8 +93,7 @@ class RadSource(object):
         distance = manhattanDistance(self.location, point)
         return self.magnitude - self.decayFactor * distance
 
-class MapEntity(object):
-    __slots__ = ['_space']
+class MapEntity():
     def __init__(self, pointList):
         self._space = set(pointList)
 
@@ -121,7 +120,6 @@ def rayToVectorPointList(posRay, vectorLength):
     return pointList
 
 class Board(MapEntity):
-    __slots__ = ['pos', '_space']
     def __init__(self, pos):
         self.pos = pos
         self._space = None
@@ -165,7 +163,6 @@ class Animal(MapEntity):
         return MapEntity(self.space)
 
 class Alligator(Animal):
-    __slots__ = ['posRay', 'index']
     # Class Constants
     objLength = 3
     # Modified Variables
@@ -195,7 +192,6 @@ class Alligator(Animal):
         return a
 
 class Turtle(Animal):
-    __slots__ = ['posRay', 'index']
     # Class Constants
     objLength = 2
     # Modified Variables
@@ -225,7 +221,6 @@ class Turtle(Animal):
         return t
 
 class Tree(MapEntity):
-    __slots__ = ['pos']
     def __init__(self, pos):
         self.pos = pos
 
@@ -237,7 +232,6 @@ class Tree(MapEntity):
         return set([self.pos])
 
 class Boat(MapEntity):
-    __slots__ = ['posRay', 'index']
     # Class Constants
     objLength = 2
     # Modified Variables
@@ -293,7 +287,6 @@ class Boat(MapEntity):
         
 
 class Goal(MapEntity):
-    __slots__ = ['pos']
     def __init__(self, pos):
         self.pos = pos
 
@@ -316,8 +309,7 @@ def createBoardState(board, radSrc, radMag, radDecF, boat, goal, alligs, turts, 
                        [Turtle(t) for t in turts],
                        [Tree(t) for t in trees] )
 
-class BoardState(object):
-    __slots__ = ['board', 'radSrc', 'boat', 'goal', 'alligators', 'turtles', 'trees']
+class BoardState():
     def __init__(self, board, radSrc, boat, goal, alligs, turtles, trees):
         self.board = board
         self.radSrc = radSrc
