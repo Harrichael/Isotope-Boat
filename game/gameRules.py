@@ -46,21 +46,21 @@ class Action():
 Text Display Helpers
 """
 class DisplayChar():
-    ray = { CardinalRay.down: 'D',
-            CardinalRay.up: 'U',
-            CardinalRay.left: 'L',
+    ray = { CardinalRay.down:  'D',
+            CardinalRay.up:    'U',
+            CardinalRay.left:  'L',
             CardinalRay.right: 'R',
           }
 
-    move = { Moves.clockwise: 'C',
+    move = { Moves.clockwise:        'C',
              Moves.counterClockwise: 'N',
-             Moves.forward: 'F',
-             Moves.backward: 'B'
+             Moves.forward:          'F',
+             Moves.backward:         'B'
            }
 
-    obj = { MovableObjs.boat: 'B',
+    obj = { MovableObjs.boat:      'B',
             MovableObjs.alligator: 'A',
-            MovableObjs.turtle: 'T',
+            MovableObjs.turtle:    'T',
           }
 
 def _createStr(*lineEls):
