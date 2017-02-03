@@ -182,10 +182,11 @@ class Alligator(Animal):
 
     @property
     def actions(self):
-        createAct = lambda md, cd: Action(MovableObjs.alligator, md, self.index, cd)
+        obj = MovableObjs.alligator
+        idx = self.index
         cardDir = self.posRay.cardDir
-        return [ createAct(Moves.forward, cardDir),
-                 createAct(Moves.backward, CardinalRay.revDict[cardDir]) ]
+        return [ Action(obj, Moves.forward, idx, cardDir),
+                 Action(obj, Moves.backward, idx, CardinalRay.revDict[cardDir]) ]
 
     def __copy__(self):
         self.__class__.numAlligators -= 1
@@ -211,10 +212,11 @@ class Turtle(Animal):
 
     @property
     def actions(self):
-        createAct = lambda md, cd: Action(MovableObjs.turtle, md, self.index, cd)
+        obj = MovableObjs.turtle
+        idx = self.index
         cardDir = self.posRay.cardDir
-        return [ createAct(Moves.forward, cardDir),
-                 createAct(Moves.backward, CardinalRay.revDict[cardDir]) ]
+        return [ Action(obj, Moves.forward, idx, cardDir),
+                 Action(obj, Moves.backward, idx, CardinalRay.revDict[cardDir]) ]
 
     def __copy__(self):
         self.__class__.numTurtles -= 1
