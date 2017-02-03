@@ -4,7 +4,7 @@ Michael Harrington
 This file exposes the game solver class that solves the puzzle
 """
 
-from timer import timeStampMS
+from timer import timeStampMuS
 from readPuzzleInput import getStateFromFile
 from gameRules import neighborGen, isGoalState, costCalc
 from pathFinders import BFTS
@@ -19,9 +19,9 @@ class GameSolver():
     def runInputFile(self, inputFilePath):
         initialState = getStateFromFile(inputFilePath)
 
-        startTime = timeStampMS()
+        startTime = timeStampMuS()
         self.pathSolver = BFTS(initialState, neighborGen, costCalc, isGoalState)
-        endTime = timeStampMS()
+        endTime = timeStampMuS()
         self.totalTime = endTime - startTime
 
         return self.pathSolver.pathFound
