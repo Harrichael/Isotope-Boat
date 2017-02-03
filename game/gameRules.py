@@ -10,27 +10,6 @@ from copy import copy, deepcopy
 from util.cartMath import Point, CardinalRay, manhattanDistance
 
 """
-Rule handling helpers for displaying text
-"""
-class DisplayChar():
-    ray = { CardinalRay.down: 'D',
-            CardinalRay.up: 'U',
-            CardinalRay.left: 'L',
-            CardinalRay.right: 'R',
-          }
-
-def _createStr(*lineEls):
-    return ' '.join(map(str, lineEls))
-
-def _createStrLine(*lineEls):
-    return _createStr(*lineEls) + '\n'
-
-"""
-Rule helpers for rotating cardinal rays
-"""
-
-
-"""
 Rule abstractions for actions
 """
 class Moves():
@@ -39,21 +18,10 @@ class Moves():
     forward = 2
     backward = 3
 
-    moveDict = { clockwise: 'C',
-                 counterClockwise: 'N',
-                 forward: 'F',
-                 backward: 'B'
-               }
-
 class MovableObjs():
     boat = 0
     alligator = 1
     turtle = 2
-
-    objDict = { boat: 'B',
-                alligator: 'A',
-                turtle: 'T',
-              }
 
 class Action():
     def __init__(self, obj, act, index, cardDir=None):
@@ -64,11 +32,42 @@ class Action():
         self.cardDir = cardDir
 
     def __str__(self):
-        dirChar = Moves.moveDict[self.act] if self.cardDir == None else DisplayChar.ray[self.cardDir]
-        return ' '.join([ MovableObjs.objDict[self.obj],
+        if self.cardDir == None:
+            dirChar = DisplayChar.move[self.act]
+        else:
+            dirChar = DisplayChar.ray[self.cardDir]
+
+        return ' '.join([ DisplayChar.obj[self.obj],
                           str(self.objIndex),
                           dirChar
                        ])
+
+"""
+Text Display Helpers
+"""
+class DisplayChar():
+    ray = { CardinalRay.down: 'D',
+            CardinalRay.up: 'U',
+            CardinalRay.left: 'L',
+            CardinalRay.right: 'R',
+          }
+
+    move = { Moves.clockwise: 'C',
+             Moves.counterClockwise: 'N',
+             Moves.forward: 'F',
+             Moves.backward: 'B'
+           }
+
+    obj = { MovableObjs.boat: 'B',
+            MovableObjs.alligator: 'A',
+            MovableObjs.turtle: 'T',
+          }
+
+def _createStr(*lineEls):
+    return ' '.join(map(str, lineEls))
+
+def _createStrLine(*lineEls):
+    return _createStr(*lineEls) + '\n'
 
 """
 Rule abstractions for game objects
@@ -143,9 +142,9 @@ class Animal(MapEntity):
             self.posRay.x = pos.x
             self.posRay.y = pos.y
         elif action.act == Moves.backward:
-            self.posRay.reverse()
+            self.posRay.reverseRay()
             pos = rayToVectorPointList(self.posRay, 2)[1]
-            self.posRay.reverse()
+            self.posRay.reverseRay()
             self.posRay.x = pos.x
             self.posRay.y = pos.y
         else:

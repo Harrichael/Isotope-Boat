@@ -53,8 +53,8 @@ class CardinalRay():
     def pos(self):
         return Point(self.x, self.y)
 
-    def reverse(self):
-        self.cardDir = self.revDict[self.cardDir]
+    def reverseRay(self):
+        self.cardDir = self.reverse[self.cardDir]
 
     def __eq__(self, other):
         return (self.x == other.x) and (self.y == other.y) and (self.cardDir == other.cardDir)
