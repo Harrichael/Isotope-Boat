@@ -12,11 +12,12 @@ from util.cartMath import Point, CardinalRay, manhattanDistance
 """
 Rule handling helpers for displaying text
 """
-charDict = { CardinalRay.down: 'D',
-             CardinalRay.up: 'U',
-             CardinalRay.left: 'L',
-             CardinalRay.right: 'R',
-           }
+class DisplayChar():
+    ray = { CardinalRay.down: 'D',
+            CardinalRay.up: 'U',
+            CardinalRay.left: 'L',
+            CardinalRay.right: 'R',
+          }
 
 def _createStr(*lineEls):
     return ' '.join(map(str, lineEls))
@@ -28,17 +29,6 @@ def _createStrLine(*lineEls):
 Rule helpers for rotating cardinal rays
 """
 
-clockwise = { CardinalRay.down: CardinalRay.left,
-              CardinalRay.left: CardinalRay.up,
-              CardinalRay.up: CardinalRay.right,
-              CardinalRay.right: CardinalRay.down
-            }
-
-counterClockwise = { CardinalRay.down: CardinalRay.right,
-                     CardinalRay.left: CardinalRay.down,
-                     CardinalRay.up: CardinalRay.left,
-                     CardinalRay.right: CardinalRay.up
-                   }
 
 """
 Rule abstractions for actions
@@ -74,7 +64,7 @@ class Action():
         self.cardDir = cardDir
 
     def __str__(self):
-        dirChar = Moves.moveDict[self.act] if self.cardDir == None else charDict[self.cardDir]
+        dirChar = Moves.moveDict[self.act] if self.cardDir == None else DisplayChar.ray[self.cardDir]
         return ' '.join([ MovableObjs.objDict[self.obj],
                           str(self.objIndex),
                           dirChar
@@ -142,7 +132,7 @@ class Board(MapEntity):
 class Animal(MapEntity):
     @property
     def charDir(self):
-        return charDict[self.posRay.cardDir]
+        return DisplayChar.ray[self.posRay.cardDir]
 
     def __str__(self):
         return _createStr(self.posRay.x, self.posRay.y, self.charDir)
@@ -183,7 +173,7 @@ class Alligator(Animal):
         idx = self.index
         cardDir = self.posRay.cardDir
         return [ Action(obj, Moves.forward, idx, cardDir),
-                 Action(obj, Moves.backward, idx, CardinalRay.revDict[cardDir]) ]
+                 Action(obj, Moves.backward, idx, CardinalRay.reverse[cardDir]) ]
 
     def __copy__(self):
         self.__class__.numAlligators -= 1
@@ -212,7 +202,7 @@ class Turtle(Animal):
         idx = self.index
         cardDir = self.posRay.cardDir
         return [ Action(obj, Moves.forward, idx, cardDir),
-                 Action(obj, Moves.backward, idx, CardinalRay.revDict[cardDir]) ]
+                 Action(obj, Moves.backward, idx, CardinalRay.reverse[cardDir]) ]
 
     def __copy__(self):
         self.__class__.numTurtles -= 1
@@ -244,7 +234,7 @@ class Boat(MapEntity):
 
     @property
     def charDir(self):
-        return charDict[self.posRay.cardDir]
+        return DisplayChar.ray[self.posRay.cardDir]
 
     def __str__(self):
         return _createStr(self.posRay.x, self.posRay.y, self.charDir)
@@ -263,12 +253,12 @@ class Boat(MapEntity):
         movePoints = set()
         frontPos = rayToVectorPointList(self.posRay, 2)[1]
         if action.act == Moves.clockwise:
-            self.posRay.cardDir = clockwise[self.posRay.cardDir]
+            self.posRay.cardDir = CardinalRay.clockwise[self.posRay.cardDir]
             newFrontPos = rayToVectorPointList(self.posRay, 2)[1]
             movePoints.add(Point(newFrontPos.x, frontPos.y))
             movePoints.add(Point(frontPos.x, newFrontPos.y))
         elif action.act == Moves.counterClockwise:
-            self.posRay.cardDir = counterClockwise[self.posRay.cardDir]
+            self.posRay.cardDir = CardinalRay.counterClockwise[self.posRay.cardDir]
             newFrontPos = rayToVectorPointList(self.posRay, 2)[1]
             movePoints.add(Point(newFrontPos.x, frontPos.y))
             movePoints.add(Point(frontPos.x, newFrontPos.y))

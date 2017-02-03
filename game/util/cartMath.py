@@ -26,11 +26,23 @@ class CardinalRay():
     left = 2
     right = 3
 
-    revDict = { down: up,
-                up: down,
+    reverse = { down:  up,
+                up:    down,
                 right: left,
-                left: right
+                left:  right
               }
+
+    clockwise = { down:  left,
+                  left:  up,
+                  up:    right,
+                  right: down
+                }
+
+    counterClockwise = { down:  right,
+                         left:  down,
+                         up:    left,
+                         right: up
+                       }
 
     def __init__(self, x, y, cardDir):
         self.x = x
