@@ -5,6 +5,7 @@ This file contains path finder algorithms
 """
 
 from collections import deque
+
 from timer import profile
 
 """

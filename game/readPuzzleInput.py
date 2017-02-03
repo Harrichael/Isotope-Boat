@@ -6,7 +6,7 @@ These functions return a board state given the input.
 An error could be raised in the event of invalid input.
 """
 
-from cartMath import Point, Rectangle, CardinalRay
+from util.cartMath import Point, Rectangle, CardinalRay
 from gameRules import createBoardState
 
 """
@@ -25,7 +25,6 @@ for each tree:
 <goalX::Int> <goalY::Int>
 """
 
-#TODO: sanitize inputs!
 def getStateFromFile(inputFilePath):
     with open(inputFilePath) as fileObj:
         lines = fileObj.readlines()

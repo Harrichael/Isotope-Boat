@@ -8,7 +8,7 @@ in order to navigate a traffic jam like game with the
 addition of a gradient cost field dubbed a radiation field.
 """
 
-from gameSolver import GameSolver
+from game.gameSolver import GameSolver
 
 if __name__ == '__main__':
     solver = GameSolver()

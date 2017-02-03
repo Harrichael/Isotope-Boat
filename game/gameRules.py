@@ -6,8 +6,8 @@ This file provides game rules and game abstractions
 
 from itertools import chain
 from copy import copy, deepcopy
-from memoize import Memoize
-from cartMath import Point, CardinalRay, manhattanDistance
+
+from util.cartMath import Point, CardinalRay, manhattanDistance
 
 """
 Rule handling helpers for displaying text

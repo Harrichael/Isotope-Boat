@@ -4,10 +4,10 @@ Michael Harrington
 This file exposes the game solver class that solves the puzzle
 """
 
-from timer import timeStampMuS
+from util.timer import timeStampMuS
+from util.pathFinders import BFTS
 from readPuzzleInput import getStateFromFile
 from gameRules import neighborGen, isGoalState, costCalc
-from pathFinders import BFTS
 
 """
 GameSolver class handles extracting file input, searching, and printing
