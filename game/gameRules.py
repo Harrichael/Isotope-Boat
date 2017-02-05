@@ -7,7 +7,7 @@ This file provides game rules and game abstractions
 from itertools import chain
 from copy import copy, deepcopy
 
-from util.cartMath import Point, CardinalRay, manhattanDistance
+from util.cartMath import Point, Cardinal, CardinalRay, manhattanDistance
 
 """
 Rule abstractions for actions
@@ -46,10 +46,10 @@ class Action():
 Text Display Helpers
 """
 class DisplayChar():
-    ray = { CardinalRay.down:  'D',
-            CardinalRay.up:    'U',
-            CardinalRay.left:  'L',
-            CardinalRay.right: 'R',
+    ray = { Cardinal.down:  'D',
+            Cardinal.up:    'U',
+            Cardinal.left:  'L',
+            Cardinal.right: 'R',
           }
 
     move = { Moves.clockwise:        'C',
@@ -93,10 +93,10 @@ class MapEntity():
     def space(self):
         return self._space
 
-nextPDict = { CardinalRay.down: lambda p: Point(p.x, p.y+1),
-              CardinalRay.up: lambda p: Point(p.x, p.y-1),
-              CardinalRay.left: lambda p: Point(p.x-1, p.y),
-              CardinalRay.right: lambda p: Point(p.x+1, p.y)
+nextPDict = { Cardinal.down: lambda p: Point(p.x, p.y+1),
+              Cardinal.up: lambda p: Point(p.x, p.y-1),
+              Cardinal.left: lambda p: Point(p.x-1, p.y),
+              Cardinal.right: lambda p: Point(p.x+1, p.y)
             }
 
 def rayToVectorPointList(posRay, vectorLength):
@@ -172,7 +172,7 @@ class Alligator(Animal):
         idx = self.index
         cardDir = self.posRay.cardDir
         return [ Action(obj, Moves.forward, idx, cardDir),
-                 Action(obj, Moves.backward, idx, CardinalRay.reverse[cardDir]) ]
+                 Action(obj, Moves.backward, idx, Cardinal.reverse[cardDir]) ]
 
     def __copy__(self):
         self.__class__.numAlligators -= 1
@@ -201,7 +201,7 @@ class Turtle(Animal):
         idx = self.index
         cardDir = self.posRay.cardDir
         return [ Action(obj, Moves.forward, idx, cardDir),
-                 Action(obj, Moves.backward, idx, CardinalRay.reverse[cardDir]) ]
+                 Action(obj, Moves.backward, idx, Cardinal.reverse[cardDir]) ]
 
     def __copy__(self):
         self.__class__.numTurtles -= 1
@@ -252,12 +252,12 @@ class Boat(MapEntity):
         movePoints = set()
         frontPos = rayToVectorPointList(self.posRay, 2)[1]
         if action.act == Moves.clockwise:
-            self.posRay.cardDir = CardinalRay.clockwise[self.posRay.cardDir]
+            self.posRay.cardDir = Cardinal.clockwise[self.posRay.cardDir]
             newFrontPos = rayToVectorPointList(self.posRay, 2)[1]
             movePoints.add(Point(newFrontPos.x, frontPos.y))
             movePoints.add(Point(frontPos.x, newFrontPos.y))
         elif action.act == Moves.counterClockwise:
-            self.posRay.cardDir = CardinalRay.counterClockwise[self.posRay.cardDir]
+            self.posRay.cardDir = Cardinal.counterClockwise[self.posRay.cardDir]
             newFrontPos = rayToVectorPointList(self.posRay, 2)[1]
             movePoints.add(Point(newFrontPos.x, frontPos.y))
             movePoints.add(Point(frontPos.x, newFrontPos.y))

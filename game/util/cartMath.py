@@ -20,7 +20,7 @@ class Rectangle():
         self.x = x
         self.y = y
 
-class CardinalRay():
+class Cardinal():
     down = 0
     up = 1
     left = 2
@@ -44,6 +44,7 @@ class CardinalRay():
                          right: up
                        }
 
+class CardinalRay(Cardinal):
     def __init__(self, x, y, cardDir):
         self.x = x
         self.y = y
