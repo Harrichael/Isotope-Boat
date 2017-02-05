@@ -7,7 +7,12 @@ This file provides game rules and game abstractions
 from itertools import chain
 from copy import copy, deepcopy
 
-from util.cartMath import Point, Cardinal, CardinalRay, manhattanDistance
+from util.cartMath import ( Point,
+                            Cardinal,
+                            CardinalRay,
+                            manhattanDistance,
+                            rayToPointList,
+                          )
 
 """
 Rule abstractions for actions
@@ -93,21 +98,6 @@ class MapEntity():
     def space(self):
         return self._space
 
-nextPDict = { Cardinal.down: lambda p: Point(p.x, p.y+1),
-              Cardinal.up: lambda p: Point(p.x, p.y-1),
-              Cardinal.left: lambda p: Point(p.x-1, p.y),
-              Cardinal.right: lambda p: Point(p.x+1, p.y)
-            }
-
-def rayToVectorPointList(posRay, vectorLength):
-    nextP = nextPDict[posRay.cardDir]
-
-    # We get a minor speed up by preallocating the list
-    pointList = [posRay.pos]*vectorLength
-    for index in range(vectorLength-1):
-        pointList[index+1] = nextP(pointList[index])
-    return pointList
-
 class Board(MapEntity):
     def __init__(self, pos):
         self.pos = pos
@@ -138,12 +128,12 @@ class Animal(MapEntity):
 
     def move(self, action):
         if action.act == Moves.forward:
-            pos = rayToVectorPointList(self.posRay, 2)[1]
+            pos = rayToPointList(self.posRay, 2)[1]
             self.posRay.x = pos.x
             self.posRay.y = pos.y
         elif action.act == Moves.backward:
             self.posRay.reverseRay()
-            pos = rayToVectorPointList(self.posRay, 2)[1]
+            pos = rayToPointList(self.posRay, 2)[1]
             self.posRay.reverseRay()
             self.posRay.x = pos.x
             self.posRay.y = pos.y
@@ -164,7 +154,7 @@ class Alligator(Animal):
 
     @property
     def space(self):
-        return set(rayToVectorPointList(self.posRay, self.objLength))
+        return set(rayToPointList(self.posRay, self.objLength))
 
     @property
     def actions(self):
@@ -193,7 +183,7 @@ class Turtle(Animal):
 
     @property
     def space(self):
-        return set(rayToVectorPointList(self.posRay, self.objLength))
+        return set(rayToPointList(self.posRay, self.objLength))
 
     @property
     def actions(self):
@@ -240,7 +230,7 @@ class Boat(MapEntity):
 
     @property
     def space(self):
-        return set(rayToVectorPointList(self.posRay, self.objLength))
+        return set(rayToPointList(self.posRay, self.objLength))
 
     @property
     def actions(self):
@@ -250,15 +240,15 @@ class Boat(MapEntity):
 
     def move(self, action):
         movePoints = set()
-        frontPos = rayToVectorPointList(self.posRay, 2)[1]
+        frontPos = rayToPointList(self.posRay, 2)[1]
         if action.act == Moves.clockwise:
             self.posRay.cardDir = Cardinal.clockwise[self.posRay.cardDir]
-            newFrontPos = rayToVectorPointList(self.posRay, 2)[1]
+            newFrontPos = rayToPointList(self.posRay, 2)[1]
             movePoints.add(Point(newFrontPos.x, frontPos.y))
             movePoints.add(Point(frontPos.x, newFrontPos.y))
         elif action.act == Moves.counterClockwise:
             self.posRay.cardDir = Cardinal.counterClockwise[self.posRay.cardDir]
-            newFrontPos = rayToVectorPointList(self.posRay, 2)[1]
+            newFrontPos = rayToPointList(self.posRay, 2)[1]
             movePoints.add(Point(newFrontPos.x, frontPos.y))
             movePoints.add(Point(frontPos.x, newFrontPos.y))
         elif action.act == Moves.forward:

@@ -65,3 +65,18 @@ class CardinalRay(Cardinal):
 
 def manhattanDistance(src, dest):
     return abs(dest.x - src.x) + abs(dest.y - src.y)
+
+nextPDict = { Cardinal.down: lambda p: Point(p.x, p.y+1),
+              Cardinal.up: lambda p: Point(p.x, p.y-1),
+              Cardinal.left: lambda p: Point(p.x-1, p.y),
+              Cardinal.right: lambda p: Point(p.x+1, p.y)
+            }
+
+def rayToPointList(posRay, vectorLength):
+    nextP = nextPDict[posRay.cardDir]
+
+    # We get a minor speed up by preallocating the list
+    pointList = [posRay.pos]*vectorLength
+    for index in range(vectorLength-1):
+        pointList[index+1] = nextP(pointList[index])
+    return pointList
