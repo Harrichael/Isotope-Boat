@@ -30,6 +30,13 @@ class SearchNode():
 
         return self._path
 
+    # NOTE: Equal check is only based on board state!
+    def __eq__(self, other):
+        return self.boardState == other.boardState
+
+    def __hash__(self):
+        return hash(self.boardState)
+
 """
 Base Search Class
 
@@ -74,7 +81,7 @@ Depth Limited Graph Search
 """
 class DLGS(SearchSolver):
     def __init__(self, initialState, neighborGen, costCalc, isGoal, depthLimit):
-        exploredSet = {}
+        explored = set()
         frontier = deque()
         frontier.append( SearchNode(initialState, None, None, 0) )
         while True:
@@ -86,11 +93,15 @@ class DLGS(SearchSolver):
             if isGoal(selectNode.boardState):
                 self.searchNodePath = selectNode.path
                 break
+            explored.add(selectNode)
             if len(selectNode.path) > depthLimit:
                 continue
             for newNode, action in neighborGen(selectNode.boardState):
                 nodeCost = selectNode.pathCost + costCalc(newNode)
-                frontier.append( SearchNode(newNode, selectNode, action, nodeCost) )
+                newSearchNode = SearchNode(newNode, selectNode, action, nodeCost)
+                if newSearchNode in frontier or newSearchNode in explored:
+                    continue
+                frontier.append(newSearchNode)
 
 """
 Iterative Deepening Depth First Graph Search
