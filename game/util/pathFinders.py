@@ -5,6 +5,7 @@ This file contains path finder algorithms
 """
 
 from collections import deque
+from itertools import count
 
 from timer import profile
 
@@ -108,5 +109,9 @@ Iterative Deepening Depth First Graph Search
 """
 class IDDFGS(SearchSolver):
     def __init__(self, initialState, neighborGen, costCalc, isGoal):
-        pass
+        for depthLimit in count():
+            solver = DLGS(initialState, neighborGen, costCalc, isGoal, depthLimit)
+            if solver.pathFound:
+                self.searchNodePath = solver.searchNodePath
+                break
 

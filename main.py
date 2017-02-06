@@ -20,7 +20,7 @@ outputFiles = [ 'solution1.txt',
               ]
 
 if __name__ == '__main__':
-    solver = GameSolver(lambda i, n, c, g: DLGS(i, n, c, g, 10))
+    solver = GameSolver(IDDFGS)
     for inFile, outFile in zip(inputPuzzles, outputFiles):
         if solver.runInputFile('puzzles/' + inFile):
             output = solver.strOutput()
