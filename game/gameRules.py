@@ -161,15 +161,11 @@ class Animal(MapEntity):
         return MapEntity(self.space)
 
 class Alligator(Animal):
-    # Class Constants
     objLength = 3
-    # Modified Variables
-    numAlligators = 0
 
-    def __init__(self, posRay):
+    def __init__(self, posRay, index):
         self.posRay = posRay
-        self.index = self.numAlligators
-        self.__class__.numAlligators += 1
+        self.index = index
 
     @property
     def space(self):
@@ -184,21 +180,15 @@ class Alligator(Animal):
                  Action(obj, Moves.backward, idx, Cardinal.reverse[cardDir]) ]
 
     def __copy__(self):
-        self.__class__.numAlligators -= 1
-        a = Alligator(CardinalRay(self.posRay.x, self.posRay.y, self.posRay.cardDir))
-        a.index = self.index
+        a = Alligator(CardinalRay(self.posRay.x, self.posRay.y, self.posRay.cardDir), self.index)
         return a
 
 class Turtle(Animal):
-    # Class Constants
     objLength = 2
-    # Modified Variables
-    numTurtles = 0
 
-    def __init__(self, posRay):
+    def __init__(self, posRay, index):
         self.posRay = posRay
-        self.index = self.numTurtles
-        self.__class__.numTurtles += 1
+        self.index = index
 
     @property
     def space(self):
@@ -213,9 +203,7 @@ class Turtle(Animal):
                  Action(obj, Moves.backward, idx, Cardinal.reverse[cardDir]) ]
 
     def __copy__(self):
-        self.__class__.numTurtles -= 1
-        t = Turtle(CardinalRay(self.posRay.x, self.posRay.y, self.posRay.cardDir))
-        t.index = self.index
+        t = Turtle(CardinalRay(self.posRay.x, self.posRay.y, self.posRay.cardDir), self.index)
         return t
 
 class Tree(MapEntity):
@@ -230,15 +218,11 @@ class Tree(MapEntity):
         return set([self.pos])
 
 class Boat(MapEntity):
-    # Class Constants
     objLength = 2
-    # Modified Variables
-    numBoats = 0
 
-    def __init__(self, posRay):
+    def __init__(self, posRay, index):
         self.posRay = posRay
-        self.index = self.numBoats
-        self.__class__.numBoats += 1
+        self.index = index
 
     @property
     def charDir(self):
@@ -278,9 +262,7 @@ class Boat(MapEntity):
         return MapEntity(movePoints.union(self.space))
 
     def __copy__(self):
-        self.__class__.numBoats -= 1
-        b = Boat(CardinalRay(self.posRay.x, self.posRay.y, self.posRay.cardDir))
-        b.index = self.index
+        b = Boat(CardinalRay(self.posRay.x, self.posRay.y, self.posRay.cardDir), self.index)
         return b
 
 class Goal(MapEntity):
@@ -304,10 +286,10 @@ given a valid action.
 def createBoardState(board, radSrc, radMag, radDecF, boat, goal, alligs, turts, trees):
     return BoardState( Board(board),
                        RadSource(radSrc, radMag, radDecF),
-                       Boat(boat),
+                       Boat(boat, index=0),
                        Goal(goal),
-                       [Alligator(a) for a in alligs],
-                       [Turtle(t) for t in turts],
+                       [Alligator(a, index) for index, a in enumerate(alligs)],
+                       [Turtle(t, index) for index, t in enumerate(turts)],
                        [Tree(t) for t in trees] )
 
 class BoardState():
