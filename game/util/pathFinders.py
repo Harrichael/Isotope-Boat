@@ -17,35 +17,27 @@ class SearchNode():
         self.parent = parent
         self.action = action
         self.pathCost = pathCost
+        # Derived attributes
+        self._path = None
 
-    def createPath(self):
-        path = []
-        node = self
-        while node:
-            path.insert(0, node)
-            node = node.parent
-        return path
+    @property
+    def path(self):
+        if not self._path:
+            self._path = []
+            node = self
+            while node:
+                self._path.insert(0, node)
+                node = node.parent
+
+        return self._path
 
 """
-Breadth First Tree Search
+Base Search Class
+
+Provides helper methods for use after completing search.
+Subclasses expected to set searchNodePath to complete path.
 """
-class BFTS():
-    def __init__(self, initialState, neighborGen, costCalc, isGoal):
-        frontier = deque()
-        frontier.append( SearchNode(initialState, None, None, 0) )
-        while True:
-            if not frontier:
-                self.searchNodePath = None
-                break
-            selectNode = frontier.popleft()
-
-            if isGoal(selectNode.boardState):
-                self.searchNodePath = selectNode.createPath()
-                break
-            for newNode, action in neighborGen(selectNode.boardState):
-                nodeCost = selectNode.pathCost + costCalc(newNode)
-                frontier.append( SearchNode(newNode, selectNode, action, nodeCost) )
-
+class SearchSolver():
     @property
     def pathFound(self):
         return bool(self.searchNodePath != None)
@@ -57,4 +49,31 @@ class BFTS():
     @property
     def actionPath(self):
         return list(map(lambda n: n.action, self.searchNodePath[1:]))
+
+"""
+Breadth First Tree Search
+"""
+class BFTS(SearchSolver):
+    def __init__(self, initialState, neighborGen, costCalc, isGoal):
+        frontier = deque()
+        frontier.append( SearchNode(initialState, None, None, 0) )
+        while True:
+            if not frontier:
+                self.searchNodePath = None
+                break
+            selectNode = frontier.popleft()
+
+            if isGoal(selectNode.boardState):
+                self.searchNodePath = selectNode.path
+                break
+            for newNode, action in neighborGen(selectNode.boardState):
+                nodeCost = selectNode.pathCost + costCalc(newNode)
+                frontier.append( SearchNode(newNode, selectNode, action, nodeCost) )
+
+"""
+Iterative Deepening Depth First Graph Search
+"""
+class IDDFGS(SearchSolver):
+    def __init__(self, initialState, neighborGen, costCalc, isGoal):
+        pass
 
