@@ -15,7 +15,13 @@ from util.cartMath import ( Point,
                           )
 
 """
-Rule abstractions for actions
+Action Rules
+
+Boat, alligator, and turtle are movable game objects.
+Each turn, one thing can be moved, represented by Action().
+Possible moves are clockwise, counterClockwise, forward, and
+backward. Each movable object will return their valid actions
+created using the Action class.
 """
 class Moves():
     clockwise = 0
@@ -48,7 +54,12 @@ class Action():
                        ])
 
 """
-Text Display Helpers
+Text Display Rules
+
+This section defines some text displaying helpers.
+In addition to translating directions, move types,
+and object types, this section provides helper methods
+space joining.
 """
 class DisplayChar():
     ray = { Cardinal.down:  'D',
@@ -75,7 +86,15 @@ def _createStrLine(*lineEls):
     return _createStr(*lineEls) + '\n'
 
 """
-Rule abstractions for game objects
+Game Object Rules
+
+Game objects, like goals, boat, and other movable objects
+are represented here. A MapEntity has some spacial interactions.
+Radiation sources do not collide with any object.
+
+Actions property returns list of potential actions the object can
+take. Move function applies an action and returns a mapentity
+object that must be empty for the move to be successful.
 """
 class RadSource():
     def __init__(self, srcPoint, magnitude, decayFactor):
@@ -263,7 +282,6 @@ class Boat(MapEntity):
         b = Boat(CardinalRay(self.posRay.x, self.posRay.y, self.posRay.cardDir))
         b.index = self.index
         return b
-        
 
 class Goal(MapEntity):
     def __init__(self, pos):
@@ -277,7 +295,11 @@ class Goal(MapEntity):
         return set([self.pos])
 
 """
-Rule handling for representing board state
+Board State Rules
+
+BoardState holds the game objects for a defined state.
+The function applyAction can return a successor boardstate
+given a valid action.
 """
 def createBoardState(board, radSrc, radMag, radDecF, boat, goal, alligs, turts, trees):
     return BoardState( Board(board),
@@ -372,14 +394,12 @@ def isGoalState(boardState):
     return boardState.boat.collision(boardState.goal)
 
 """
-Rule handling for state generation
+This section provides helper functions to pass to search
+algorithms.
 """
 def neighborGen(boardState):
     return boardState.getNeighbors()
 
-"""
-Rule handling for cost calculation
-"""
 def costCalc(boardState):
     return sum([boardState.radSrc.rads(point) for point in boardState.boat.space])
 
