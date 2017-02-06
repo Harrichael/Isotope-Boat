@@ -408,17 +408,19 @@ class BoardState():
 
         elif action.obj == MovableObjs.alligator:
             newBoat = self.boat
-            newAlligators = map(copy, self.alligators)
+            newAlligators = copy(self.alligators)
             newTurtles = self.turtles
-            actionObj = newAlligators[index]
+            actionObj = copy(newAlligators[index])
+            newAlligators[index] = actionObj
             otherAlligators = newAlligators[:index] + newAlligators[index+1:]
             obstacles = ([newBoat] + otherAlligators + newTurtles + self.trees)
 
         elif action.obj == MovableObjs.turtle:
             newBoat = self.boat
             newAlligators = self.alligators
-            newTurtles = map(copy, self.turtles)
-            actionObj = newTurtles[index]
+            newTurtles = copy(self.turtles)
+            actionObj = copy(newTurtles[index])
+            newTurtles[index] = actionObj
             otherTurtles = newTurtles[:index] + newTurtles[index+1:]
             obstacles = ([newBoat] + newAlligators + otherTurtles + self.trees)
 
