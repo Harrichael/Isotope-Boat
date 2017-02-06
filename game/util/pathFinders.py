@@ -71,6 +71,28 @@ class BFTS(SearchSolver):
                 frontier.append( SearchNode(newNode, selectNode, action, nodeCost) )
 
 """
+Depth Limited Graph Search
+"""
+class DLGS(SearchSolver):
+    def __init__(self, initialState, neighborGen, costCalc, isGoal, depthLimit):
+        frontier = deque()
+        frontier.append( SearchNode(initialState, None, None, 0) )
+        while True:
+            if not frontier:
+                self.searchNodePath = None
+                break
+            selectNode = frontier.pop()
+
+            if isGoal(selectNode.boardState):
+                self.searchNodePath = selectNode.path
+                break
+            if len(selectNode.path) > depthLimit:
+                continue
+            for newNode, action in neighborGen(selectNode.boardState):
+                nodeCost = selectNode.pathCost + costCalc(newNode)
+                frontier.append( SearchNode(newNode, selectNode, action, nodeCost) )
+
+"""
 Iterative Deepening Depth First Graph Search
 """
 class IDDFGS(SearchSolver):

@@ -9,6 +9,7 @@ addition of a gradient cost field dubbed a radiation field.
 """
 
 from game.gameSolver import GameSolver
+from game.util.pathFinders import BFTS, DLGS, IDDFGS
 
 inputPuzzles = [ 'puzzle1.txt',
                  'examplePuzzle.txt',
@@ -19,7 +20,7 @@ outputFiles = [ 'solution1.txt',
               ]
 
 if __name__ == '__main__':
-    solver = GameSolver()
+    solver = GameSolver(lambda i, n, c, g: DLGS(i, n, c, g, 10))
     for inFile, outFile in zip(inputPuzzles, outputFiles):
         if solver.runInputFile('puzzles/' + inFile):
             output = solver.strOutput()

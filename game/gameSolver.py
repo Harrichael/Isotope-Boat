@@ -5,7 +5,6 @@ This file exposes the game solver class that solves the puzzle
 """
 
 from util.timer import timeStampMuS
-from util.pathFinders import BFTS
 from readPuzzleInput import getStateFromFile
 from gameRules import neighborGen, isGoalState, costCalc
 
@@ -13,14 +12,14 @@ from gameRules import neighborGen, isGoalState, costCalc
 GameSolver class handles extracting file input, searching, and printing
 """
 class GameSolver():
-    def __init__(self):
-        pass
+    def __init__(self, solverAlg):
+        self.solverAlg = solverAlg
 
     def runInputFile(self, inputFilePath):
         initialState = getStateFromFile(inputFilePath)
 
         startTime = timeStampMuS()
-        self.pathSolver = BFTS(initialState, neighborGen, costCalc, isGoalState)
+        self.pathSolver = self.solverAlg(initialState, neighborGen, costCalc, isGoalState)
         endTime = timeStampMuS()
         self.totalTime = endTime - startTime
 
