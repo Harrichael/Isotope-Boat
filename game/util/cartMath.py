@@ -45,6 +45,9 @@ class Cardinal():
                        }
 
 class CardinalRay(Cardinal):
+    # Cardinal Rays can represent a point and direction
+    # Rotating the direction or changing the point in lieu 
+    # of manipulating list of points
     def __init__(self, x, y, cardDir):
         self.x = x
         self.y = y

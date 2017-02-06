@@ -140,22 +140,23 @@ class Board(MapEntity):
 class Animal(MapEntity):
     @property
     def charDir(self):
-        return DisplayChar.ray[self.posRay.cardDir]
+        return DisplayChar.ray[self.cardRay.cardDir]
 
     def __str__(self):
-        return _createStr(self.posRay.x, self.posRay.y, self.charDir)
+        return _createStr(self.cardRay.x, self.cardRay.y, self.charDir)
 
     def move(self, action):
+        # Apply action but return a MapEntity that must be checked to validate move
         if action.act == Moves.forward:
-            pos = rayToPointList(self.posRay, 2)[1]
-            self.posRay.x = pos.x
-            self.posRay.y = pos.y
+            pos = rayToPointList(self.cardRay, 2)[1]
+            self.cardRay.x = pos.x
+            self.cardRay.y = pos.y
         elif action.act == Moves.backward:
-            self.posRay.reverseRay()
-            pos = rayToPointList(self.posRay, 2)[1]
-            self.posRay.reverseRay()
-            self.posRay.x = pos.x
-            self.posRay.y = pos.y
+            self.cardRay.reverseRay()
+            pos = rayToPointList(self.cardRay, 2)[1]
+            self.cardRay.reverseRay()
+            self.cardRay.x = pos.x
+            self.cardRay.y = pos.y
         else:
             raise NotImplementedError('Not a recognized boat action')
         return MapEntity(self.space)
@@ -163,47 +164,47 @@ class Animal(MapEntity):
 class Alligator(Animal):
     objLength = 3
 
-    def __init__(self, posRay, index):
-        self.posRay = posRay
+    def __init__(self, cardRay, index):
+        self.cardRay = cardRay
         self.index = index
 
     @property
     def space(self):
-        return set(rayToPointList(self.posRay, self.objLength))
+        return set(rayToPointList(self.cardRay, self.objLength))
 
     @property
     def actions(self):
         obj = MovableObjs.alligator
         idx = self.index
-        cardDir = self.posRay.cardDir
+        cardDir = self.cardRay.cardDir
         return [ Action(obj, Moves.forward, idx, cardDir),
                  Action(obj, Moves.backward, idx, Cardinal.reverse[cardDir]) ]
 
     def __copy__(self):
-        a = Alligator(CardinalRay(self.posRay.x, self.posRay.y, self.posRay.cardDir), self.index)
+        a = Alligator(CardinalRay(self.cardRay.x, self.cardRay.y, self.cardRay.cardDir), self.index)
         return a
 
 class Turtle(Animal):
     objLength = 2
 
-    def __init__(self, posRay, index):
-        self.posRay = posRay
+    def __init__(self, cardRay, index):
+        self.cardRay = cardRay
         self.index = index
 
     @property
     def space(self):
-        return set(rayToPointList(self.posRay, self.objLength))
+        return set(rayToPointList(self.cardRay, self.objLength))
 
     @property
     def actions(self):
         obj = MovableObjs.turtle
         idx = self.index
-        cardDir = self.posRay.cardDir
+        cardDir = self.cardRay.cardDir
         return [ Action(obj, Moves.forward, idx, cardDir),
                  Action(obj, Moves.backward, idx, Cardinal.reverse[cardDir]) ]
 
     def __copy__(self):
-        t = Turtle(CardinalRay(self.posRay.x, self.posRay.y, self.posRay.cardDir), self.index)
+        t = Turtle(CardinalRay(self.cardRay.x, self.cardRay.y, self.cardRay.cardDir), self.index)
         return t
 
 class Tree(MapEntity):
@@ -220,49 +221,50 @@ class Tree(MapEntity):
 class Boat(MapEntity):
     objLength = 2
 
-    def __init__(self, posRay, index):
-        self.posRay = posRay
+    def __init__(self, cardRay, index):
+        self.cardRay = cardRay
         self.index = index
 
     @property
     def charDir(self):
-        return DisplayChar.ray[self.posRay.cardDir]
+        return DisplayChar.ray[self.cardRay.cardDir]
 
     def __str__(self):
-        return _createStr(self.posRay.x, self.posRay.y, self.charDir)
+        return _createStr(self.cardRay.x, self.cardRay.y, self.charDir)
 
     @property
     def space(self):
-        return set(rayToPointList(self.posRay, self.objLength))
+        return set(rayToPointList(self.cardRay, self.objLength))
 
     @property
     def actions(self):
-        return [ Action(MovableObjs.boat, Moves.forward, self.index, self.posRay.cardDir),
+        return [ Action(MovableObjs.boat, Moves.forward, self.index, self.cardRay.cardDir),
                  Action(MovableObjs.boat, Moves.counterClockwise, self.index),
                  Action(MovableObjs.boat, Moves.clockwise, self.index) ]
 
     def move(self, action):
+        # Apply action but return a MapEntity that must be checked to validate move
         movePoints = set()
-        frontPos = rayToPointList(self.posRay, 2)[1]
+        frontPos = rayToPointList(self.cardRay, 2)[1]
         if action.act == Moves.clockwise:
-            self.posRay.cardDir = Cardinal.clockwise[self.posRay.cardDir]
-            newFrontPos = rayToPointList(self.posRay, 2)[1]
+            self.cardRay.cardDir = Cardinal.clockwise[self.cardRay.cardDir]
+            newFrontPos = rayToPointList(self.cardRay, 2)[1]
             movePoints.add(Point(newFrontPos.x, frontPos.y))
             movePoints.add(Point(frontPos.x, newFrontPos.y))
         elif action.act == Moves.counterClockwise:
-            self.posRay.cardDir = Cardinal.counterClockwise[self.posRay.cardDir]
-            newFrontPos = rayToPointList(self.posRay, 2)[1]
+            self.cardRay.cardDir = Cardinal.counterClockwise[self.cardRay.cardDir]
+            newFrontPos = rayToPointList(self.cardRay, 2)[1]
             movePoints.add(Point(newFrontPos.x, frontPos.y))
             movePoints.add(Point(frontPos.x, newFrontPos.y))
         elif action.act == Moves.forward:
-            self.posRay.x = frontPos.x
-            self.posRay.y = frontPos.y
+            self.cardRay.x = frontPos.x
+            self.cardRay.y = frontPos.y
         else:
             raise NotImplementedError('Not a recognized boat action')
         return MapEntity(movePoints.union(self.space))
 
     def __copy__(self):
-        b = Boat(CardinalRay(self.posRay.x, self.posRay.y, self.posRay.cardDir), self.index)
+        b = Boat(CardinalRay(self.cardRay.x, self.cardRay.y, self.cardRay.cardDir), self.index)
         return b
 
 class Goal(MapEntity):
@@ -284,6 +286,11 @@ The function applyAction can return a successor boardstate
 given a valid action.
 """
 def createBoardState(board, radSrc, radMag, radDecF, boat, goal, alligs, turts, trees):
+    # radSrc :: CardinalRay
+    # radMag, radDecF :: Int
+    # boat :: CardinalRay
+    # goal :: Point
+    # alligs, turts, trees :: [CardinalRay]
     return BoardState( Board(board),
                        RadSource(radSrc, radMag, radDecF),
                        Boat(boat, index=0),
@@ -307,6 +314,8 @@ class BoardState():
         return [self.boat] + self.alligators + self.turtles
 
     def applyAction(self, action):
+        # Lets return a successor board state but return None if action is invalid.
+        # Also, you need copies of some objects.
         index = action.objIndex
         if action.obj == MovableObjs.boat:
             newBoat = copy(self.boat)
