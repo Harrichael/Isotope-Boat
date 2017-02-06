@@ -106,6 +106,15 @@ class RadSource():
         distance = manhattanDistance(self.location, point)
         return self.magnitude - self.decayFactor * distance
 
+    def __eq__(self, other):
+        return all([ self.location == other.location,
+                     self.magnitude == other.magnitude,
+                     self.decayFactor == other.decayFactor
+                  ])
+
+    def __hash__(self):
+        return hash((self.location, self.magnitude, self.decayFactor))
+
 class MapEntity():
     def __init__(self, pointList):
         self._space = set(pointList)
@@ -136,6 +145,12 @@ class Board(MapEntity):
 
     def __str__(self):
         return _createStr(self.pos.x, self.pos.y)
+
+    def __eq__(self, other):
+        return self.pos == other.pos
+
+    def __hash__(self):
+        return hash(self.pos)
 
 class Animal(MapEntity):
     @property
@@ -184,6 +199,12 @@ class Alligator(Animal):
         a = Alligator(CardinalRay(self.cardRay.x, self.cardRay.y, self.cardRay.cardDir), self.index)
         return a
 
+    def __eq__(self, other):
+        return self.cardRay == other.cardRay and self.index == other.index
+
+    def __hash__(self):
+        return hash((self.cardRay, self.index))
+
 class Turtle(Animal):
     objLength = 2
 
@@ -207,6 +228,12 @@ class Turtle(Animal):
         t = Turtle(CardinalRay(self.cardRay.x, self.cardRay.y, self.cardRay.cardDir), self.index)
         return t
 
+    def __eq__(self, other):
+        return self.cardRay == other.cardRay and self.index == other.index
+
+    def __hash__(self):
+        return hash((self.cardRay, self.index))
+
 class Tree(MapEntity):
     def __init__(self, pos):
         self.pos = pos
@@ -217,6 +244,12 @@ class Tree(MapEntity):
     @property
     def space(self):
         return set([self.pos])
+
+    def __eq__(self, other):
+        return self.pos == other.pos
+
+    def __hash__(self):
+        return hash(self.pos)
 
 class Boat(MapEntity):
     objLength = 2
@@ -267,6 +300,12 @@ class Boat(MapEntity):
         b = Boat(CardinalRay(self.cardRay.x, self.cardRay.y, self.cardRay.cardDir), self.index)
         return b
 
+    def __eq__(self, other):
+        return self.cardRay == other.cardRay and self.index == other.index
+
+    def __hash__(self):
+        return hash((self.cardRay, self.index))
+
 class Goal(MapEntity):
     def __init__(self, pos):
         self.pos = pos
@@ -277,6 +316,12 @@ class Goal(MapEntity):
     @property
     def space(self):
         return set([self.pos])
+
+    def __eq__(self, other):
+        return self.pos == other.pos
+
+    def __hash__(self):
+        return hash(self.pos)
 
 """
 Board State Rules
@@ -380,6 +425,39 @@ class BoardState():
         stateStr += str(self.goal) + '\n'
 
         return stateStr
+
+    def __eq__(self, other):
+        if self.boat != other.boat:
+            return False
+        for selfTurtle, otherTurtle in zip(self.turtles, other.turtles):
+            if selfTurtle != otherTurtle:
+                return False
+        for selfAlligator, otherAlligator in zip(self.alligators, other.alligators):
+            if selfAlligator != otherAlligator:
+                return False
+        for selfTrees, otherTrees in zip(self.trees, other.trees):
+            if selfTree != otherTree:
+                return False
+        if any([ len(other.trees) != len(self.trees),
+                 len(other.alligators) != len(self.alligators),
+                 len(other.turtles) != len(self.turtles),
+                 self.goal != other.goal,
+                 self.radSrc != other.radSrc,
+                 self.goal != other.goal,
+              ]):
+            return False
+
+        return True
+
+    def __hash__(self):
+        return hash(( self.board,
+                      self.radSrc,
+                      self.boat,
+                      self.goal,
+                      tuple(self.alligators),
+                      tuple(self.turtles),
+                      tuple(self.trees)
+                   ))
 
 def isGoalState(boardState):
     return boardState.boat.collision(boardState.goal)

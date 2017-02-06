@@ -74,7 +74,7 @@ Depth Limited Graph Search
 """
 class DLGS(SearchSolver):
     def __init__(self, initialState, neighborGen, costCalc, isGoal, depthLimit):
-        exploredSet = set()
+        exploredSet = {}
         frontier = deque()
         frontier.append( SearchNode(initialState, None, None, 0) )
         while True:
