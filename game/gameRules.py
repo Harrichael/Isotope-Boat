@@ -208,10 +208,8 @@ class Alligator(Animal):
         obj = MovableObjs.alligator
         idx = self.index
         cardDir = self.cardRay.cardDir
-        acts = [ Action(obj, Moves.forward, idx, cardDir),
+        return [ Action(obj, Moves.forward, idx, cardDir),
                  Action(obj, Moves.backward, idx, Cardinal.reverse[cardDir]) ]
-        shuffle(acts)
-        return acts
 
     def __copy__(self):
         a = Alligator(CardinalRay(self.cardRay.x, self.cardRay.y, self.cardRay.cardDir), self.index)
@@ -242,10 +240,8 @@ class Turtle(Animal):
         obj = MovableObjs.turtle
         idx = self.index
         cardDir = self.cardRay.cardDir
-        acts = [ Action(obj, Moves.forward, idx, cardDir),
+        return [ Action(obj, Moves.forward, idx, cardDir),
                  Action(obj, Moves.backward, idx, Cardinal.reverse[cardDir]) ]
-        shuffle(acts)
-        return acts
 
     def __copy__(self):
         t = Turtle(CardinalRay(self.cardRay.x, self.cardRay.y, self.cardRay.cardDir), self.index)
@@ -300,11 +296,9 @@ class Boat(MapEntity):
 
     @property
     def actions(self):
-        acts = [ Action(MovableObjs.boat, Moves.forward, self.index, self.cardRay.cardDir),
+        return [ Action(MovableObjs.boat, Moves.forward, self.index, self.cardRay.cardDir),
                  Action(MovableObjs.boat, Moves.counterClockwise, self.index),
                  Action(MovableObjs.boat, Moves.clockwise, self.index) ]
-        shuffle(acts)
-        return acts
 
     def move(self, action):
         # Apply action but return a MapEntity that must be checked to validate move
@@ -445,7 +439,9 @@ class BoardState():
 
     def getNeighbors(self):
         for gameObj in self.actionObjects:
-            for action in gameObj.actions:
+            actions = gameObj.actions
+            shuffle(actions)
+            for action in actions:
                 newBoardState = self.applyAction(action)
                 if newBoardState:
                     yield newBoardState, action
