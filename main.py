@@ -12,7 +12,7 @@ from game.gameSolver import GameSolver
 from game.util.pathFinders import BFTS, DLGS, IDDFGS
 
 inputPuzzles = [ 'puzzle1.txt',
-                 'examplePuzzle.txt',
+                 'puzzle2.txt',
                ]
 
 outputFiles = [ 'solution1.txt',

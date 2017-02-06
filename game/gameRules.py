@@ -53,6 +53,15 @@ class Action():
                           dirChar
                        ])
 
+    def __eq__(self, other):
+        return all([ self.obj == other.obj,
+                     self.objIndex == other.objIndex,
+                     self.act == other.act
+                  ])
+
+    def __ne__(self, other):
+        return not self == other
+
 """
 Text Display Rules
 
@@ -112,6 +121,9 @@ class RadSource():
                      self.decayFactor == other.decayFactor
                   ])
 
+    def __ne__(self, other):
+        return not self == other
+
     def __hash__(self):
         return hash((self.location, self.magnitude, self.decayFactor))
 
@@ -148,6 +160,9 @@ class Board(MapEntity):
 
     def __eq__(self, other):
         return self.pos == other.pos
+
+    def __ne__(self, other):
+        return not self == other
 
     def __hash__(self):
         return hash(self.pos)
@@ -202,6 +217,9 @@ class Alligator(Animal):
     def __eq__(self, other):
         return self.cardRay == other.cardRay and self.index == other.index
 
+    def __ne__(self, other):
+        return not self == other
+
     def __hash__(self):
         return hash((self.cardRay, self.index))
 
@@ -231,6 +249,9 @@ class Turtle(Animal):
     def __eq__(self, other):
         return self.cardRay == other.cardRay and self.index == other.index
 
+    def __ne__(self, other):
+        return not self == other
+
     def __hash__(self):
         return hash((self.cardRay, self.index))
 
@@ -247,6 +268,9 @@ class Tree(MapEntity):
 
     def __eq__(self, other):
         return self.pos == other.pos
+
+    def __ne__(self, other):
+        return not self == other
 
     def __hash__(self):
         return hash(self.pos)
@@ -303,6 +327,9 @@ class Boat(MapEntity):
     def __eq__(self, other):
         return self.cardRay == other.cardRay and self.index == other.index
 
+    def __ne__(self, other):
+        return not self == other
+
     def __hash__(self):
         return hash((self.cardRay, self.index))
 
@@ -319,6 +346,9 @@ class Goal(MapEntity):
 
     def __eq__(self, other):
         return self.pos == other.pos
+
+    def __ne__(self, other):
+        return not self == other
 
     def __hash__(self):
         return hash(self.pos)
@@ -435,7 +465,7 @@ class BoardState():
         for selfAlligator, otherAlligator in zip(self.alligators, other.alligators):
             if selfAlligator != otherAlligator:
                 return False
-        for selfTrees, otherTrees in zip(self.trees, other.trees):
+        for selfTree, otherTree in zip(self.trees, other.trees):
             if selfTree != otherTree:
                 return False
         if any([ len(other.trees) != len(self.trees),
@@ -448,6 +478,9 @@ class BoardState():
             return False
 
         return True
+
+    def __ne__(self, other):
+        return not self == other
 
     def __hash__(self):
         return hash(( self.board,
