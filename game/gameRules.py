@@ -5,7 +5,7 @@ This file provides game rules and game abstractions
 """
 
 from itertools import chain
-from copy import copy, deepcopy
+from copy import copy
 from random import shuffle
 
 from util.cartMath import ( Point,
@@ -408,7 +408,7 @@ class BoardState():
 
         elif action.obj == MovableObjs.alligator:
             newBoat = self.boat
-            newAlligators = deepcopy(self.alligators)
+            newAlligators = map(copy, self.alligators)
             newTurtles = self.turtles
             actionObj = newAlligators[index]
             otherAlligators = newAlligators[:index] + newAlligators[index+1:]
@@ -417,7 +417,7 @@ class BoardState():
         elif action.obj == MovableObjs.turtle:
             newBoat = self.boat
             newAlligators = self.alligators
-            newTurtles = deepcopy(self.turtles)
+            newTurtles = map(copy, self.turtles)
             actionObj = newTurtles[index]
             otherTurtles = newTurtles[:index] + newTurtles[index+1:]
             obstacles = ([newBoat] + newAlligators + otherTurtles + self.trees)
