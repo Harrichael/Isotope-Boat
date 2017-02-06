@@ -6,6 +6,7 @@ This file provides game rules and game abstractions
 
 from itertools import chain
 from copy import copy, deepcopy
+from random import shuffle
 
 from util.cartMath import ( Point,
                             Cardinal,
@@ -207,8 +208,10 @@ class Alligator(Animal):
         obj = MovableObjs.alligator
         idx = self.index
         cardDir = self.cardRay.cardDir
-        return [ Action(obj, Moves.forward, idx, cardDir),
+        acts = [ Action(obj, Moves.forward, idx, cardDir),
                  Action(obj, Moves.backward, idx, Cardinal.reverse[cardDir]) ]
+        shuffle(acts)
+        return acts
 
     def __copy__(self):
         a = Alligator(CardinalRay(self.cardRay.x, self.cardRay.y, self.cardRay.cardDir), self.index)
@@ -239,8 +242,10 @@ class Turtle(Animal):
         obj = MovableObjs.turtle
         idx = self.index
         cardDir = self.cardRay.cardDir
-        return [ Action(obj, Moves.forward, idx, cardDir),
+        acts = [ Action(obj, Moves.forward, idx, cardDir),
                  Action(obj, Moves.backward, idx, Cardinal.reverse[cardDir]) ]
+        shuffle(acts)
+        return acts
 
     def __copy__(self):
         t = Turtle(CardinalRay(self.cardRay.x, self.cardRay.y, self.cardRay.cardDir), self.index)
@@ -295,9 +300,11 @@ class Boat(MapEntity):
 
     @property
     def actions(self):
-        return [ Action(MovableObjs.boat, Moves.forward, self.index, self.cardRay.cardDir),
+        acts = [ Action(MovableObjs.boat, Moves.forward, self.index, self.cardRay.cardDir),
                  Action(MovableObjs.boat, Moves.counterClockwise, self.index),
                  Action(MovableObjs.boat, Moves.clockwise, self.index) ]
+        shuffle(acts)
+        return acts
 
     def move(self, action):
         # Apply action but return a MapEntity that must be checked to validate move
