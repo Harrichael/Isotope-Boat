@@ -24,10 +24,9 @@ class SearchNode():
     def path(self):
         if not self._path:
             self._path = []
-            node = self
-            while node:
-                self._path.insert(0, node)
-                node = node.parent
+            if self.parent:
+                self._path.extend(self.parent.path)
+            self._path.append(self)
 
         return self._path
 
@@ -75,6 +74,7 @@ Depth Limited Graph Search
 """
 class DLGS(SearchSolver):
     def __init__(self, initialState, neighborGen, costCalc, isGoal, depthLimit):
+        exploredSet = set()
         frontier = deque()
         frontier.append( SearchNode(initialState, None, None, 0) )
         while True:
