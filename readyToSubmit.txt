@@ -1,4 +1,4 @@
-yes
+no
 # When you are ready to submit, change the "no" in this file to a "yes", and push your files (including this one) to your repository at git-classes.mst.edu
 # The automatic grader will check at 11:59pm each night, starting with the due date, to see which day you submitted on
 # If the grader sees "yes" in this file at 11:59pm, it will take that version of the repository as the version to be submitted
