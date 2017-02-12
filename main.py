@@ -22,20 +22,36 @@ from game.util.cartMath import manhattanDistance, rayToPointList
 
 inputPuzzles = [ 'puzzle1.txt',
                  'puzzle2.txt',
+                 'puzzle3.txt',
                ]
 
 outputFiles = [ 'solution1.txt',
                 'solution2.txt',
+                'solution3.txt',
               ]
 
 def heuristic(boardState):
     if boardState.boat.collision(boardState.goal):
         return 0
+    boatPos = boardState.boat.cardRay.pos
+    goalPos = boardState.goal.pos
+    radPos = boardState.radSrc.pos
+    turtles = boardState.turtles
+    alligators = boardState.alligators
+    maxDist = boardState.board.pos.x + boardState.board.pos.y
+
     goalBlocked = 0
-    obstacles = boardState.turtles + boardState.alligators
-    if boardState.goal.collision(MapEntity(chain(*[obst.space for obst in obstacles]))):
+    if boardState.goal.collision(MapEntity(chain(*[t.space for t in turtles]))):
         goalBlocked = 2
-    return manhattanDistance(boardState.boat.cardRay.pos, boardState.goal.pos) + goalBlocked
+    elif boardState.goal.collision(MapEntity(chain(*[a.space for a in alligators]))):
+        goalBlocked = 3
+    boatMobility = 0
+    if not boardState.canBoatAdvance():
+        boatMobility = 2 if len(list(boardState.getBoatNeighbors())) else 3
+    goalDistance = manhattanDistance(boatPos, goalPos)
+    radDistance = maxDist - manhattanDistance(boatPos, radPos)
+    radWeight = (goalDistance - 1.0)/goalDistance
+    return goalDistance + radWeight*radDistance + goalBlocked + boatMobility
 
 if __name__ == '__main__':
     solver = GameSolver(lambda i, n, c, g: GrBFGS(i, n, c, g, heuristic))

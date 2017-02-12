@@ -108,16 +108,16 @@ object that must be empty for the move to be successful.
 """
 class RadSource():
     def __init__(self, srcPoint, magnitude, decayFactor):
-        self.location = srcPoint
+        self.pos = srcPoint
         self.magnitude = magnitude
         self.decayFactor = decayFactor
 
     def rads(self, point):
-        distance = manhattanDistance(self.location, point)
+        distance = manhattanDistance(self.pos, point)
         return self.magnitude - self.decayFactor * distance
 
     def __eq__(self, other):
-        return all([ self.location == other.location,
+        return all([ self.pos == other.pos,
                      self.magnitude == other.magnitude,
                      self.decayFactor == other.decayFactor
                   ])
@@ -126,7 +126,7 @@ class RadSource():
         return not self == other
 
     def __hash__(self):
-        return hash((self.location, self.magnitude, self.decayFactor))
+        return hash((self.pos, self.magnitude, self.decayFactor))
 
 class MapEntity():
     def __init__(self, pointList):
@@ -446,10 +446,22 @@ class BoardState():
                 if newBoardState:
                     yield newBoardState, action
 
+    def getBoatNeighbors(self):
+        for action in self.boat.actions:
+            newBoardState = self.applyAction(action)
+            if newBoardState:
+                yield newBoardState, action
+
+    def canBoatAdvance(self):
+        for action in self.boat.actions:
+            if action.act == Moves.forward:
+                return bool(self.applyAction(action))
+        return False
+
     def __str__(self):
         stateStr = ''
         stateStr += str(self.board) + '\n'
-        stateStr += _createStrLine(self.radSrc.location.x, self.radSrc.location.y)
+        stateStr += _createStrLine(self.radSrc.pos.x, self.radSrc.pos.y)
         stateStr += _createStrLine(self.radSrc.magnitude, self.radSrc.decayFactor)
         stateStr += _createStrLine( len(self.alligators),
                                          len(self.turtles),
