@@ -6,6 +6,7 @@ This file implements a Heap which is a wrapper over heapq
 
 from collections import defaultdict
 import heapq
+from random import randint
 
 # We want to return this HeapNode class because we use the
 # registry as a class variable but it needs to be specific
@@ -16,7 +17,11 @@ def getHeapNodeClass():
     
         @classmethod
         def create(cls, el, val):
-            heapNode = (val, cls.registry[el], el)
+            orVal = cls.registry[el]
+            # This tuple is used for ordering, el will never be compared
+            # The second tuple item is used to randomly prioritize earlier els when tied
+            # The third tuple item ensures that el will not need to be compared
+            heapNode = (val, randint(orVal/2, orVal), orVal, el)
             cls.registry[el] += 1
             return heapNode
     return HeapNode

@@ -38,7 +38,8 @@ def heuristic(boardState):
     radPos = boardState.radSrc.pos
     turtles = boardState.turtles
     alligators = boardState.alligators
-    maxDist = boardState.board.pos.x + boardState.board.pos.y
+    boardPos = boardState.board.pos
+    maxRadDist = max(boardPos.x - radPos.x, radPos.x) + max(boardPos.y - radPos.y, radPos.y)
 
     goalBlocked = 0
     if boardState.goal.collision(MapEntity(chain(*[t.space for t in turtles]))):
@@ -48,10 +49,12 @@ def heuristic(boardState):
     boatMobility = 0
     if not boardState.canBoatAdvance():
         boatMobility = 2 if len(list(boardState.getBoatNeighbors())) else 3
+    radGoalDistance = manhattanDistance(radPos, goalPos)
     goalDistance = manhattanDistance(boatPos, goalPos)
-    radDistance = maxDist - manhattanDistance(boatPos, radPos)
-    radWeight = (goalDistance - 1.0)/goalDistance
-    return goalDistance + radWeight*radDistance + goalBlocked + boatMobility
+    goalWeight = (goalDistance + 5.0)/goalDistance
+    radDistance = maxRadDist - manhattanDistance(boatPos, radPos)
+    radWeight = radGoalDistance/(radGoalDistance + 1.0) * (goalDistance - 1.0)/goalDistance
+    return goalWeight*goalDistance + radWeight*radDistance + goalBlocked + boatMobility
 
 if __name__ == '__main__':
     solver = GameSolver(lambda i, n, c, g: GrBFGS(i, n, c, g, heuristic))
