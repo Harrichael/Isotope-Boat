@@ -8,6 +8,7 @@ from collections import deque
 from itertools import count
 
 from timer import profile
+from heap import Heap
 
 """
 Search node class to hold a board state and other info
@@ -114,4 +115,30 @@ class IDDFGS(SearchSolver):
             if solver.pathFound:
                 self.searchNodePath = solver.searchNodePath
                 break
+
+"""
+Greedy Best First Graph Search
+"""
+class GrBFGS(SearchSolver):
+    def __init__(self, initialState, neighborGen, costCalc, isGoal, heuristic):
+        explored = set()
+        frontier = Heap()
+        newSearchNode = SearchNode(initialState, None, None, 0)
+        frontier.push(newSearchNode, heuristic(initialState))
+        while True:
+            if not frontier:
+                self.searchNodePath = None
+                break
+            selectNode = frontier.pop()
+
+            if isGoal(selectNode.boardState):
+                self.searchNodePath = selectNode.path
+                break
+            explored.add(selectNode)
+            for newState, action in neighborGen(selectNode.boardState):
+                nodeCost = selectNode.pathCost + costCalc(newState)
+                newSearchNode = SearchNode(newState, selectNode, action, nodeCost)
+                if newSearchNode in frontier or newSearchNode in explored:
+                    continue
+                frontier.push(newSearchNode, heuristic(newState))
 
