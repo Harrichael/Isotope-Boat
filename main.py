@@ -33,7 +33,7 @@ outputFiles = [ 'solution1.txt',
 def heuristic(boardState):
     if boardState.boat.collision(boardState.goal):
         return 0
-    boatPos = boardState.boat.pos
+    boatPos = boardState.boat.cardRay.pos
     goalPos = boardState.goal.pos
     radPos = boardState.radSrc.pos
     turtles = boardState.turtles
