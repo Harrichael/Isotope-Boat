@@ -53,7 +53,7 @@ def heuristic(boardState):
     goalDistance = manhattanDistance(boatPos, goalPos)
     goalWeight = (goalDistance + 5.0)/goalDistance
     radDistance = maxRadDist - manhattanDistance(boatPos, radPos)
-    radWeight = radGoalDistance/(radGoalDistance + 1.0) * (goalDistance - 1.0)/goalDistance
+    radWeight = (radGoalDistance + 1.0)/(radGoalDistance + 2.0) * (goalDistance - 1.0)/goalDistance
     return goalWeight*goalDistance + radWeight*radDistance + goalBlocked + boatMobility
 
 if __name__ == '__main__':
