@@ -21,7 +21,7 @@ def canBoatAdvance(boardState):
             return bool(boardState.applyAction(action))
     return False
 
-def smartHeuristic(boardState):
+def explorativeHeuristic(boardState):
     # If goal is made, give it best priority!
     if boardState.boat.collision(boardState.goal):
         return 0
@@ -70,3 +70,35 @@ def smartHeuristic(boardState):
     radWeight = (radGoalDistance + 1.0)/(radGoalDistance + 2.0) * (goalDistance - 1.0)/goalDistance
 
     return goalWeight*goalDistance + radWeight*radDistance + goalBlocked + boatMobility + obstacleCost
+
+def createSmartHeuristic(initialBoardState):
+    goalPos = initialBoardState.goal.pos
+    boardPos = initialBoardState.board.pos
+    def smartHeuristic(boardState):
+        # If goal is made, give it best priority!
+        if boardState.boat.collision(boardState.goal):
+            return 0
+    
+        # Lets make some helper values
+        boatPos = boardState.boat.cardRay.pos
+        boatFrontPos = rayToPointList(boardState.boat.cardRay, boardState.boat.objLength)[-1]
+    
+        # Obviously goal distance is important
+        goalCost = manhattanDistance(boatPos, goalPos) + 5
+    
+        # We should reward a position with low number of obstacles between goal and boat
+        minX = min(boatPos.x, goalPos.x, boatFrontPos.x)
+        maxX = max(boatPos.x, goalPos.x, boatFrontPos.x)
+        minY = min(boatPos.y, goalPos.y, boatFrontPos.y)
+        maxY = max(boatPos.y, goalPos.y, boatFrontPos.y)
+        goalTrack = set()
+        for x in range(minX, maxX+1):
+            for y in range(minY, maxY+1):
+                goalTrack.add(Point(x, y))
+        obstacleObjs = boardState.alligators + boardState.turtles + boardState.trees
+        obstaclePoints = set(chain(*[obst.space for obst in obstacleObjs]))
+        obstacleCost = len(goalTrack.intersection(obstaclePoints))
+    
+        return goalCost + obstacleCost
+
+    return smartHeuristic

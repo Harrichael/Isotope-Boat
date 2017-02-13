@@ -8,7 +8,7 @@ in order to navigate a traffic jam like game with the
 addition of a gradient cost field dubbed a radiation field.
 """
 
-from game.heuristic import smartHeuristic
+from game.heuristic import createSmartHeuristic
 from game.gameSolver import GameSolver
 from game.util.pathFinders import BFTS, DLGS, IDDFGS, GrBFGS
 
@@ -23,7 +23,7 @@ outputFiles = [ 'solution1.txt',
               ]
 
 if __name__ == '__main__':
-    solver = GameSolver(lambda i, n, c, g: GrBFGS(i, n, c, g, smartHeuristic))
+    solver = GameSolver(lambda i, n, c, g: GrBFGS(i, n, c, g, createSmartHeuristic(i)))
     for inFile, outFile in zip(inputPuzzles, outputFiles):
         if solver.runInputFile('puzzles/' + inFile):
             output = solver.strOutput()
