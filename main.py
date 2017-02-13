@@ -33,7 +33,7 @@ outputFiles = [ 'solution1.txt',
 def heuristic(boardState):
     if boardState.boat.collision(boardState.goal):
         return 0
-    boatPos = boardState.boat.cardRay.pos
+    boatPos = boardState.boat.pos
     goalPos = boardState.goal.pos
     radPos = boardState.radSrc.pos
     turtles = boardState.turtles
@@ -48,7 +48,7 @@ def heuristic(boardState):
         goalBlocked = 3
     boatMobility = 0
     if not boardState.canBoatAdvance():
-        boatMobility = 2 if len(list(boardState.getBoatNeighbors())) else 3
+        boatMobility = 4 - len(list(boardState.getBoatNeighbors()))
     radGoalDistance = manhattanDistance(radPos, goalPos)
     goalDistance = manhattanDistance(boatPos, goalPos)
     goalWeight = (goalDistance + 5.0)/goalDistance
