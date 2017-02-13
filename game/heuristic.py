@@ -52,6 +52,16 @@ def smartHeuristic(boardState):
     goalDistance = manhattanDistance(boatPos, goalPos)
     # We would rather be far away from the rad source
     radDistance = maxRadDist - manhattanDistance(boatPos, radPos)
+    # We should reward a position with low number of obstacles between goal and boat
+    goalTrack = set()
+    xOffset = 1 if boatPos.x < goalPos.x else -1
+    yOffset = 1 if boatPos.y < goalPos.y else -1
+    for x in range(boatPos.x, goalPos.x + xOffset, xOffset):
+        for y in range(boatPos.y, goalPos.y + yOffset, yOffset):
+            goalTrack.add(Point(x, y))
+    obstacleObjs = boardState.alligators + boardState.turtles + boardState.trees
+    obstaclePoints = set(chain(*[obst.space for obst in obstacleObjs]))
+    obstacleCost = len(goalTrack.intersection(obstaclePoints))
 
     # Goal is more important if you are closer to the goal
     goalWeight = (goalDistance + 5.0)/goalDistance
@@ -59,4 +69,4 @@ def smartHeuristic(boardState):
     # and less important if are far away
     radWeight = (radGoalDistance + 1.0)/(radGoalDistance + 2.0) * (goalDistance - 1.0)/goalDistance
 
-    return goalWeight*goalDistance + radWeight*radDistance + goalBlocked + boatMobility
+    return goalWeight*goalDistance + radWeight*radDistance + goalBlocked + boatMobility + obstacleCost
