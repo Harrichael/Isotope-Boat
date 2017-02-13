@@ -6,14 +6,7 @@ Main Python File for Puzzle Project 1
 This puzzle is using search algorithms (and a later phase, heuristics)
 in order to navigate a traffic jam like game with the
 addition of a gradient cost field dubbed a radiation field.
-
-TODO:
-objLength in gameRule files
-CLI
-heuristic in different file 
 """
-
-from itertools import chain
 
 from game.heuristic import smartHeuristic
 from game.gameSolver import GameSolver

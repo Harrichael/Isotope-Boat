@@ -29,10 +29,6 @@ class Moves():
     counterClockwise = 1
     forward = 2
     backward = 3
-    rClockwise = 4
-    rCounterClockwise = 5
-    rForward = 6
-    rBackward = 7
 
 class MovableObjs():
     boat = 0
@@ -182,11 +178,11 @@ class Animal(MapEntity):
 
     def move(self, action):
         # Apply action but return a MapEntity that must be checked to validate move
-        if action.act == Moves.forward or action.act == Moves.rBackward:
+        if action.act == Moves.forward:
             pos = rayToPointList(self.cardRay, 2)[1]
             self.cardRay.x = pos.x
             self.cardRay.y = pos.y
-        elif action.act == Moves.backward or action.act == Moves.rForward:
+        elif action.act == Moves.backward:
             self.cardRay.reverseRay()
             pos = rayToPointList(self.cardRay, 2)[1]
             self.cardRay.reverseRay()
@@ -214,14 +210,6 @@ class Alligator(Animal):
         cardDir = self.cardRay.cardDir
         return [ Action(obj, Moves.forward, idx, cardDir),
                  Action(obj, Moves.backward, idx, Cardinal.reverse[cardDir]) ]
-
-    @property
-    def rActions(self):
-        obj = MovableObjs.alligator
-        idx = self.index
-        cardDir = self.cardRay.cardDir
-        return [ Action(obj, Moves.rForward, idx, cardDir),
-                 Action(obj, Moves.rBackward, idx, Cardinal.reverse[cardDir]) ]
 
     def __copy__(self):
         a = Alligator(CardinalRay(self.cardRay.x, self.cardRay.y, self.cardRay.cardDir), self.index)
@@ -254,14 +242,6 @@ class Turtle(Animal):
         cardDir = self.cardRay.cardDir
         return [ Action(obj, Moves.forward, idx, cardDir),
                  Action(obj, Moves.backward, idx, Cardinal.reverse[cardDir]) ]
-
-    @property
-    def rActions(self):
-        obj = MovableObjs.turtle
-        idx = self.index
-        cardDir = self.cardRay.cardDir
-        return [ Action(obj, Moves.rForward, idx, cardDir),
-                 Action(obj, Moves.rBackward, idx, Cardinal.reverse[cardDir]) ]
 
     def __copy__(self):
         t = Turtle(CardinalRay(self.cardRay.x, self.cardRay.y, self.cardRay.cardDir), self.index)
@@ -320,22 +300,16 @@ class Boat(MapEntity):
                  Action(MovableObjs.boat, Moves.counterClockwise, self.index),
                  Action(MovableObjs.boat, Moves.clockwise, self.index) ]
 
-    @property
-    def rActions(self):
-        return [ Action(MovableObjs.boat, Moves.rForward, self.index, self.cardRay.cardDir),
-                 Action(MovableObjs.boat, Moves.rCounterClockwise, self.index),
-                 Action(MovableObjs.boat, Moves.rClockwise, self.index) ]
-
     def move(self, action):
         # Apply action but return a MapEntity that must be checked to validate move
         movePoints = set()
         frontPos = rayToPointList(self.cardRay, 2)[1]
-        if action.act == Moves.clockwise or action.act == Moves.rCounterClockwise:
+        if action.act == Moves.clockwise:
             self.cardRay.cardDir = Cardinal.clockwise[self.cardRay.cardDir]
             newFrontPos = rayToPointList(self.cardRay, 2)[1]
             movePoints.add(Point(newFrontPos.x, frontPos.y))
             movePoints.add(Point(frontPos.x, newFrontPos.y))
-        elif action.act == Moves.counterClockwise or action.act == Moves.rClockwise:
+        elif action.act == Moves.counterClockwise:
             self.cardRay.cardDir = Cardinal.counterClockwise[self.cardRay.cardDir]
             newFrontPos = rayToPointList(self.cardRay, 2)[1]
             movePoints.add(Point(newFrontPos.x, frontPos.y))
@@ -343,12 +317,6 @@ class Boat(MapEntity):
         elif action.act == Moves.forward:
             self.cardRay.x = frontPos.x
             self.cardRay.y = frontPos.y
-        elif action.act == Moves.rForward:
-            self.cardRay.reverseRay()
-            rFrontPos = rayToPointList(self.cardRay, 2)[1]
-            self.cardRay.reverseRay()
-            self.cardRay.x = rFrontPos.x
-            self.cardRay.y = rFrontPos.y
         else:
             raise NotImplementedError('Unimplemented movable action: {}'.format(action.act))
         return MapEntity(movePoints.union(self.space))
@@ -478,27 +446,6 @@ class BoardState():
                 if newBoardState:
                     yield newBoardState, action
 
-    def getReverseNeighbors(self):
-        for gameObj in self.actionObjects:
-            actions = gameObj.rActions
-            shuffle(actions)
-            for action in actions:
-                newBoardState = self.applyAction(action)
-                if newBoardState:
-                    yield newBoardState, action
-
-    def getBoatNeighbors(self):
-        for action in self.boat.actions:
-            newBoardState = self.applyAction(action)
-            if newBoardState:
-                yield newBoardState, action
-
-    def canBoatAdvance(self):
-        for action in self.boat.actions:
-            if action.act == Moves.forward:
-                return bool(self.applyAction(action))
-        return False
-
     def __str__(self):
         stateStr = ''
         stateStr += str(self.board) + '\n'
@@ -559,9 +506,6 @@ algorithms.
 """
 def neighborGen(boardState):
     return boardState.getNeighbors()
-
-def predecessorGen(boardState):
-    return boardState.getReverseNeighbors()
 
 def costCalc(boardState):
     return sum([boardState.radSrc.rads(point) for point in boardState.boat.space])

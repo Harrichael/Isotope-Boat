@@ -6,8 +6,20 @@ This file provides heuristics for path finders
 
 from itertools import chain
 
-from game.gameRules import MapEntity
+from game.gameRules import MapEntity,Moves
 from game.util.cartMath import manhattanDistance, rayToPointList
+
+def getBoatNeighbors(boardState):
+    for action in boardState.boat.actions:
+        newBoardState = boardState.applyAction(action)
+        if newBoardState:
+            yield newBoardState, action
+
+def canBoatAdvance(boardState):
+    for action in boardState.boat.actions:
+        if action.act == Moves.forward:
+            return bool(boardState.applyAction(action))
+    return False
 
 def smartHeuristic(boardState):
     if boardState.boat.collision(boardState.goal):
@@ -26,8 +38,8 @@ def smartHeuristic(boardState):
     elif boardState.goal.collision(MapEntity(chain(*[a.space for a in alligators]))):
         goalBlocked = 3
     boatMobility = 0
-    if not boardState.canBoatAdvance():
-        boatMobility = 4 - len(list(boardState.getBoatNeighbors()))
+    if not canBoatAdvance(boardState):
+        boatMobility = 4 - len(list(getBoatNeighbors(boardState)))
     radGoalDistance = manhattanDistance(radPos, goalPos)
     goalDistance = manhattanDistance(boatPos, goalPos)
     goalWeight = (goalDistance + 5.0)/goalDistance
