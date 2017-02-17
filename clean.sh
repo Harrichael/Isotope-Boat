@@ -1,11 +1,12 @@
 #!/bin/bash
 
 # Remove pyc files
+cd src
 cd game
 rm *.pyc
 cd util
 rm *.pyc
-cd ../..
+cd ../../..
 
 # Remove solutions
 cd solutions

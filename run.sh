@@ -5,5 +5,5 @@
 # The below script will compile and execute the example.cpp program.
 
 # compile the program
-python main.py
+python src/main.py
 
