@@ -71,10 +71,10 @@ def explorativeHeuristic(boardState):
 
     return goalWeight*goalDistance + radWeight*radDistance + goalBlocked + boatMobility + obstacleCost
 
-def createSmartHeuristic(initialBoardState):
+def createGreedyHeuristic(initialBoardState):
     goalPos = initialBoardState.goal.pos
     boardPos = initialBoardState.board.pos
-    def smartHeuristic(boardState):
+    def greedyHeuristic(boardState):
         # If goal is made, give it best priority!
         if boardState.boat.collision(boardState.goal):
             return 0
@@ -84,7 +84,9 @@ def createSmartHeuristic(initialBoardState):
         boatFrontPos = rayToPointList(boardState.boat.cardRay, boardState.boat.objLength)[-1]
     
         # Obviously goal distance is important
-        goalCost = manhattanDistance(boatPos, goalPos) + 5
+        goalDist = min( manhattanDistance(boatPos, goalPos),
+                        manhattanDistance(boatFrontPos, goalPos),
+                      )
     
         # We should reward a position with low number of obstacles between goal and boat
         minX = min(boatPos.x, goalPos.x, boatFrontPos.x)
@@ -99,6 +101,6 @@ def createSmartHeuristic(initialBoardState):
         obstaclePoints = set(chain(*[obst.space for obst in obstacleObjs]))
         obstacleCost = len(goalTrack.intersection(obstaclePoints))
     
-        return goalCost + obstacleCost
+        return goalDist + obstacleCost
 
-    return smartHeuristic
+    return greedyHeuristic
