@@ -142,3 +142,33 @@ class GrBFGS(SearchSolver):
                     continue
                 frontier.push(newSearchNode, heuristic(newState))
 
+"""
+A-Star Graph Search
+"""
+class AStarGS(SearchSolver):
+    def __init__(self, initialState, neighborGen, costCalc, isGoal, heuristic):
+        explored = set()
+        frontier = Heap()
+        newSearchNode = SearchNode(initialState, None, None, 0)
+        frontier.push(newSearchNode, heuristic(initialState))
+        while True:
+            if not frontier:
+                self.searchNodePath = None
+                break
+            selectNode = frontier.pop()
+
+            if isGoal(selectNode.boardState):
+                self.searchNodePath = selectNode.path
+                break
+            explored.add(selectNode)
+            for newState, action in neighborGen(selectNode.boardState):
+                nodeCost = selectNode.pathCost + costCalc(newState)
+                newSearchNode = SearchNode(newState, selectNode, action, nodeCost)
+                if newSearchNode in frontier or newSearchNode in explored:
+                    continue
+                frontier.push(newSearchNode, nodeCost + heuristic(newState))
+
+        while selectNode:
+            print selectNode.pathCost, heuristic(selectNode.boardState), selectNode.pathCost + heuristic(selectNode.boardState)
+            selectNode = selectNode.parent
+

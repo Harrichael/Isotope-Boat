@@ -7,7 +7,7 @@ This file provides heuristics for path finders
 from itertools import chain
 
 from game.gameRules import MapEntity, Moves
-from game.util.cartMath import manhattanDistance, rayToPointList, Point
+from game.util.cartMath import manhattanDistance, rayToPointList, Point, Cardinal
 
 def getBoatNeighbors(boardState):
     for action in boardState.boat.actions:
@@ -21,6 +21,9 @@ def canBoatAdvance(boardState):
             return bool(boardState.applyAction(action))
     return False
 
+"""
+We are just discovering what we can do with this heuristic
+"""
 def explorativeHeuristic(boardState):
     # If goal is made, give it best priority!
     if boardState.boat.collision(boardState.goal):
@@ -71,6 +74,9 @@ def explorativeHeuristic(boardState):
 
     return goalWeight*goalDistance + radWeight*radDistance + goalBlocked + boatMobility + obstacleCost
 
+"""
+This heuristic is for greedy searching
+"""
 def createGreedyHeuristic(initialBoardState):
     goalPos = initialBoardState.goal.pos
     boardPos = initialBoardState.board.pos
@@ -80,7 +86,8 @@ def createGreedyHeuristic(initialBoardState):
             return 0
     
         # Lets make some helper values
-        boatPos = boardState.boat.cardRay.pos
+        boatCardRay = boardState.boat.cardRay
+        boatPos = boatCardRay.pos
         boatFrontPos = rayToPointList(boardState.boat.cardRay, boardState.boat.objLength)[-1]
     
         # Obviously goal distance is important
@@ -100,7 +107,78 @@ def createGreedyHeuristic(initialBoardState):
         obstacleObjs = boardState.alligators + boardState.turtles + boardState.trees
         obstaclePoints = set(chain(*[obst.space for obst in obstacleObjs]))
         obstacleCost = len(goalTrack.intersection(obstaclePoints))
-    
-        return goalDist + obstacleCost
+
+        if (maxX - minX) > (maxY - minY):
+            orCostDict = { Cardinal.left:  0 if minX == goalPos.x else 4,
+                           Cardinal.right: 0 if maxX == goalPos.x else 4,
+                           Cardinal.up:    1,
+                           Cardinal.down:  1,
+                         }
+        else:
+            orCostDict = { Cardinal.up:    0 if minY == goalPos.y else 4,
+                           Cardinal.down:  0 if maxY == goalPos.y else 4,
+                           Cardinal.left:  1,
+                           Cardinal.right: 1,
+                         }
+            
+        orientationCost = orCostDict[boatCardRay.cardDir]
+
+        return goalDist + obstacleCost + orientationCost
 
     return greedyHeuristic
+
+"""
+Smart heuristic that gives a decent cost estimation even for A-Star searches
+"""
+def createSmartHeuristic(initialBoardState):
+    goalPos = initialBoardState.goal.pos
+    boardPos = initialBoardState.board.pos
+    def smartHeuristic(boardState):
+        # If goal is made, give it best priority!
+        if boardState.boat.collision(boardState.goal):
+            return 0
+    
+        # Lets make some helper values
+        boatCardRay = boardState.boat.cardRay
+        boatPos = boatCardRay.pos
+        boatFrontPos = rayToPointList(boardState.boat.cardRay, boardState.boat.objLength)[-1]
+    
+        # Obviously goal distance is important
+        goalDist = min( manhattanDistance(boatPos, goalPos),
+                        manhattanDistance(boatFrontPos, goalPos),
+                      )
+    
+        # We should reward a position with low number of obstacles between goal and boat
+        minX = min(boatPos.x, goalPos.x, boatFrontPos.x)
+        maxX = max(boatPos.x, goalPos.x, boatFrontPos.x)
+        minY = min(boatPos.y, goalPos.y, boatFrontPos.y)
+        maxY = max(boatPos.y, goalPos.y, boatFrontPos.y)
+        goalTrack = set()
+        for x in range(minX, maxX+1):
+            for y in range(minY, maxY+1):
+                goalTrack.add(Point(x, y))
+        obstacleObjs = boardState.alligators + boardState.turtles + boardState.trees
+        obstaclePoints = set(chain(*[obst.space for obst in obstacleObjs]))
+        obstacleCost = len(goalTrack.intersection(obstaclePoints))
+
+        if (maxX - minX) > (maxY - minY):
+            orCostDict = { Cardinal.left:  0 if minX == goalPos.x else 4,
+                           Cardinal.right: 0 if maxX == goalPos.x else 4,
+                           Cardinal.up:    1,
+                           Cardinal.down:  1,
+                         }
+        else:
+            orCostDict = { Cardinal.up:    0 if minY == goalPos.y else 4,
+                           Cardinal.down:  0 if maxY == goalPos.y else 4,
+                           Cardinal.left:  1,
+                           Cardinal.right: 1,
+                         }
+            
+        orientationCost = orCostDict[boatCardRay.cardDir]
+
+        minRadCost = min(boardState.radSrc.rads(p) for p in goalTrack)
+
+        return (goalDist + obstacleCost + orientationCost) * minRadCost
+
+    return smartHeuristic
+

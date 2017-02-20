@@ -1,3 +1,4 @@
 solve puzzle1.txt solution1.txt
 solve puzzle2.txt solution2.txt
 solve puzzle3.txt solution3.txt
+solve puzzle4.txt solution4.txt
