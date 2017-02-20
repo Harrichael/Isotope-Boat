@@ -508,5 +508,7 @@ def neighborGen(boardState):
     return boardState.getNeighbors()
 
 def costCalc(boardState):
+    if isGoalState(boardState):
+        return 0
     return sum([boardState.radSrc.rads(point) for point in boardState.boat.space])
 

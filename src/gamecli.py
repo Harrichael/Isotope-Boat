@@ -11,7 +11,10 @@ addition of a gradient cost field dubbed a radiation field.
 from cmd import Cmd
 
 from clilib.helpers import isInputPiped
-from game.heuristic import createGreedyHeuristic, createSmartHeuristic
+from game.heuristic import ( createGreedyHeuristic,
+                             createSmartHeuristic,
+                             createConsistentHeuristic
+                           )
 from game.gameSolver import GameSolver
 from game.util.pathFinders import BFTS, DLGS, IDDFGS, GrBFGS, AStarGS
 
@@ -19,7 +22,8 @@ class GameCLI(Cmd):
     def __init__(self):
         Cmd.__init__(self)
         self.prompt = 'Isotope Boat>'
-        self.solver = GameSolver(lambda i, n, c, g: AStarGS(i, n, c, g, createSmartHeuristic(i)))
+        algConstructor = lambda i, n, c, g: AStarGS(i, n, c, g, createConsistentHeuristic(i))
+        self.solver = GameSolver(algConstructor)
 
     """
     These functions control the behavior of our cli
