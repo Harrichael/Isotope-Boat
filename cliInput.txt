@@ -4,15 +4,18 @@ solve puzzle1.txt solution1_0.txt
 solve puzzle2.txt solution2_0.txt
 solve puzzle3.txt solution3_0.txt
 solve puzzle4.txt solution4_0.txt
+solve puzzle4.txt solution5_0.txt
 
 heuristic consistent
 solve puzzle1.txt solution1_1.txt
 solve puzzle2.txt solution2_1.txt
 solve puzzle3.txt solution3_1.txt
 solve puzzle4.txt solution4_1.txt
+solve puzzle4.txt solution5_1.txt
 
 heuristic admissable
 solve puzzle1.txt solution1_2.txt
 solve puzzle2.txt solution2_2.txt
 solve puzzle3.txt solution3_2.txt
 solve puzzle4.txt solution4_2.txt
+solve puzzle4.txt solution5_2.txt
