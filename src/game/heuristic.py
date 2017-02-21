@@ -184,6 +184,72 @@ def createSmartHeuristic(initialBoardState):
     return smartHeuristic
 
 """
+Admissable heuristic that gives optimal paths with A-Star TS
+"""
+def createAdmissableHeuristic(initialBoardState):
+    goalPos = initialBoardState.goal.pos
+    boardPos = initialBoardState.board.pos
+    radSrc = initialBoardState.radSrc
+    minRadCost = 2*min([radSrc.rads(Point(x, y)) 
+                        for x in range(boardPos.x)
+                            for y in range(boardPos.y)]
+                      ) + radSrc.decayFactor
+    def admissableHeuristic(boardState):
+        # If goal is made, give it best priority!
+        if boardState.boat.collision(boardState.goal):
+            return 0
+
+        # Lets make some helper values
+        boatCardRay = boardState.boat.cardRay
+        boatPos = boatCardRay.pos
+        boatFrontPos = rayToPointList(boardState.boat.cardRay, boardState.boat.objLength)[-1]
+        goalBackDist = manhattanDistance(boatPos, goalPos)
+        goalFrontDist = manhattanDistance(boatPos, goalPos)
+        obstacleObjs = boardState.alligators + boardState.turtles + boardState.trees
+        obstaclePoints = set(chain(*[obst.space for obst in obstacleObjs]))
+        minX = min(boatPos.x, goalPos.x, boatFrontPos.x)
+        maxX = max(boatPos.x, goalPos.x, boatFrontPos.x)
+        minY = min(boatPos.y, goalPos.y, boatFrontPos.y)
+        maxY = max(boatPos.y, goalPos.y, boatFrontPos.y)
+
+        # We cannot overestimate costs in the case of this state is adjacent to a goal state
+        # Remember, when moving to a goal you incur no radiation cost
+        if goalFrontDist == 1 and (boatPos.x == goalPos.x or boatPos.y == goalPos.y):
+            # We are inline from the goal and one away, but is goal clear?
+            if goalPos not in obstaclePoints:
+                return 0
+        elif goalBackDist == 1 and boatFrontPos.x != goalPos.x and boatFrontPos.y != goalPos.y:
+            # We may be able to twist into the goal, if certain space and goal is clear
+            if goalPos not in obstaclePoints:
+                # One of these two points in the boatPos,
+                # the other is the space the boat rotates through
+                p1 = Point(goalPos.x, boatFrontPos.y)
+                p2 = Point(boatFrontPos.x, goalPos.y)
+                if p1 not in obstaclePoints and p2 not in obstaclePoints:
+                    return 0
+
+        orCostDict = { Cardinal.left:  0,
+                       Cardinal.right: 0,
+                       Cardinal.up:    0,
+                       Cardinal.down:  0,
+                     }
+        if maxX == goalPos.x:
+            orCostDict[Cardinal.left] = 1
+        if minX == goalPos.x:
+            orCostDict[Cardinal.right] = 1
+        if maxY == goalPos.y:
+            orCostDict[Cardinal.up] = 1
+        if minY == goalPos.y:
+            orCostDict[Cardinal.down] = 1
+        orientationCost = orCostDict[boatCardRay.cardDir]
+
+        # Obviously goal distance is important
+        goalDist = min(goalBackDist, goalFrontDist)
+
+        return (goalDist + orientationCost) * minRadCost
+
+    return admissableHeuristic
+"""
 Consistent heuristic that gives optimal paths with A-Star GS
 """
 def createConsistentHeuristic(initialBoardState):
@@ -216,6 +282,8 @@ def createConsistentHeuristic(initialBoardState):
         elif goalBackDist == 1 and boatFrontPos.x != goalPos.x and boatFrontPos.y != goalPos.y:
             # We may be able to twist into the goal, if certain space and goal is clear
             if goalPos not in obstaclePoints:
+                # One of these two points in the boatPos,
+                # the other is the space the boat rotates through
                 p1 = Point(goalPos.x, boatFrontPos.y)
                 p2 = Point(boatFrontPos.x, goalPos.y)
                 if p1 not in obstaclePoints and p2 not in obstaclePoints:

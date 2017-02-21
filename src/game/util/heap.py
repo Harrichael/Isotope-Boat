@@ -13,17 +13,20 @@ from random import randint
 # to a Heap instance
 def getHeapNodeClass():
     class HeapNode():
-        registry = defaultdict(int)
-    
+        elCounts = defaultdict(int)
+        registry = defaultdict(list)
+
         @classmethod
         def create(cls, el, val):
-            orVal = cls.registry[el]
+            orVal = cls.elCounts[el]
             # This tuple is used for ordering, el will never be compared
             # The second tuple item is used to randomly prioritize earlier els when tied
             # The third tuple item ensures that el will not need to be compared
             heapNode = (val, randint(orVal/2, orVal), orVal, el)
-            cls.registry[el] += 1
+            cls.elCounts[el] += 1
+            cls.registry[el].append(heapNode)
             return heapNode
+
     return HeapNode
 
 class Heap():
@@ -34,6 +37,16 @@ class Heap():
     def push(self, el, val):
         newHeapNode = self.HeapNode.create(el, val)
         heapq.heappush(self.heap, newHeapNode)
+
+    def uniquePush(self, el, val):
+        if el in self.HeapNode.registry:
+            if val < self.HeapNode.registry[el][0]:
+                self.HeapNode.registry[el] = []
+                self.HeapNode.elCounts[el] = 0
+            else:
+                # El is present with lower val
+                return
+        self.push(el, val)
 
     def pop(self):
         return heapq.heappop(self.heap)[-1]

@@ -150,7 +150,7 @@ class AStarGS(SearchSolver):
         explored = set()
         frontier = Heap()
         newSearchNode = SearchNode(initialState, None, None, 0)
-        frontier.push(newSearchNode, heuristic(initialState))
+        frontier.uniquePush(newSearchNode, heuristic(initialState))
         while True:
             if not frontier:
                 self.searchNodePath = None
@@ -166,7 +166,7 @@ class AStarGS(SearchSolver):
                 newSearchNode = SearchNode(newState, selectNode, action, nodeCost)
                 if newSearchNode in frontier or newSearchNode in explored:
                     continue
-                frontier.push(newSearchNode, nodeCost + heuristic(newState))
+                frontier.uniquePush(newSearchNode, nodeCost + heuristic(newState))
 
         while selectNode:
             print selectNode.pathCost, heuristic(selectNode.boardState), selectNode.pathCost + heuristic(selectNode.boardState)
