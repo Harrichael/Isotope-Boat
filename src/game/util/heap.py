@@ -40,9 +40,11 @@ class Heap():
 
     def uniquePush(self, el, val):
         if el in self.HeapNode.registry:
-            if val < self.HeapNode.registry[el][0]:
+            if val < self.HeapNode.registry[el][0][0]:
+                self.heap.remove(self.HeapNode.registry[el][0])
                 self.HeapNode.registry[el] = []
                 self.HeapNode.elCounts[el] = 0
+                
             else:
                 # El is present with lower val
                 return

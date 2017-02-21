@@ -167,8 +167,3 @@ class AStarGS(SearchSolver):
                 if newSearchNode in frontier or newSearchNode in explored:
                     continue
                 frontier.uniquePush(newSearchNode, nodeCost + heuristic(newState))
-
-        while selectNode:
-            print selectNode.pathCost, heuristic(selectNode.boardState), selectNode.pathCost + heuristic(selectNode.boardState)
-            selectNode = selectNode.parent
-
